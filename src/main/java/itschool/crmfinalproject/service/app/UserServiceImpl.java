@@ -52,8 +52,12 @@ public class UserServiceImpl implements UserService {
     }
 
     public String userId(String username) {
-        Optional<User> user = userRepository.findByUsername(username);
-        return user.map(value -> value.getId().toString()).orElse(null);
+        Optional<User> userOptional = userRepository.findByUsername(username);
+        return userOptional.map(
+                user -> user.getId()
+                        .toString())
+                .orElseThrow(() -> new UserNotFoundException("User not found: " + username)
+                );
     }
 
     public void activateUser(final User user) {
@@ -104,8 +108,8 @@ public class UserServiceImpl implements UserService {
         }
 
         // Encrypt the password before saving the user
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        user.setPassword(encoder.encode(user.getPassword()));
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         // Set default properties for the new user
         user.setEnabled(true); // Or false if you require email verification
@@ -151,12 +155,11 @@ public class UserServiceImpl implements UserService {
         return userMapper.userToUserDto(user);
     }
 
-    public ResponseEntity<?> updateUserRole(Long userId, RoleEnum roleEnum) {
+    public UserDTO updateUserRole(Long userId, RoleEnum roleEnum) {
         User user = userRepository.findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found with username: " + userId));
         Role role = roleRepository.findByName(roleEnum).orElseThrow(() -> new IllegalStateException("Role not found."));
         user.setRole(role);
-        userRepository.save(user);
-        return ResponseEntity.ok(user);
+        return userMapper.userToUserDto(user);
     }
 
     @Override

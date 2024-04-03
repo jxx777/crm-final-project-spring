@@ -7,6 +7,13 @@ import itschool.crmfinalproject.entity.app.Contact;
 import itschool.crmfinalproject.entity.user.User;
 import itschool.crmfinalproject.exceptions.UnsupportedEntityTypeException;
 import itschool.crmfinalproject.exceptions.UnsupportedFormatException;
+import itschool.crmfinalproject.mapper.CompanyMapper;
+import itschool.crmfinalproject.mapper.ContactMapper;
+import itschool.crmfinalproject.mapper.UserMapper;
+import itschool.crmfinalproject.model.company.CompanyDTO;
+import itschool.crmfinalproject.model.contact.ContactBaseDTO;
+import itschool.crmfinalproject.model.contact.ContactDTO;
+import itschool.crmfinalproject.model.user.UserDTO;
 import itschool.crmfinalproject.repository.CompanyRepository;
 import itschool.crmfinalproject.repository.ContactRepository;
 import itschool.crmfinalproject.repository.UserRepository;
@@ -17,6 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -27,7 +35,11 @@ public class ExportServiceImpl implements ExportService {
     private final UserRepository userRepository;
     private final ContactRepository contactRepository;
     private final CompanyRepository companyRepository;
+
     private final ObjectMapper objectMapper;
+    private final ContactMapper contactMapper;
+    private final CompanyMapper companyMapper;
+    private final UserMapper userMapper;
 
     /**
      * Exports data based on the specified entity type and format.
@@ -59,7 +71,6 @@ public class ExportServiceImpl implements ExportService {
         };
     }
 
-
     // CSV - Can be used in reports, spreadsheets..
     private <T> byte[] exportListToCsv(List<T> dataList, Function<T, String> mapper, String header) {
         String csvContent = dataList.stream().map(mapper).collect(Collectors.joining("\n", header + "\n", ""));
@@ -75,20 +86,54 @@ public class ExportServiceImpl implements ExportService {
     }
 
     private ResponseEntity<byte[]> exportUsersToCsv() {
-        List<User> users = userRepository.findAll();
-        byte[] csvBytes = exportListToCsv(users, user -> user.getId() + "," + user.getUsername() + "," + user.getEmail(), "ID,Username,Email");
+        List<UserDTO> exportedUsers = userRepository.findAll().stream()
+                .map(userMapper::userToUserDto)
+                .toList();
+
+        byte[] csvBytes = exportListToCsv(exportedUsers,
+                user -> MessageFormat.format("{0},{1},{2}",
+                        user.id(),
+                        user.username(),
+                        user.email()
+                ),
+                "ID,Username,Email");
+
         return buildCsvResponse(csvBytes, "users.csv");
     }
 
     private ResponseEntity<byte[]> exportContactsToCsv() {
-        List<Contact> contacts = contactRepository.findAll();
-        byte[] csvBytes = exportListToCsv(contacts, contact -> contact.getId() + "," + contact.getFirstName() + "," + contact.getLastName(), "ID,FirstName,LastName");
+        List<ContactDTO> exportedContacts = contactRepository.findAll().stream()
+                .map(contactMapper::contactToContactDto)
+                .toList();
+
+        byte[] csvBytes = exportListToCsv(exportedContacts,
+                contact -> MessageFormat.format("{0},{1},{2},{3},{4}",
+                        contact.id(),
+                        contact.firstName(),
+                        contact.lastName(),
+                        contact.email(),
+                        contact.phoneNumber()
+                ),
+                "ID,FirstName,LastName,Email,PhoneNumber");
+
         return buildCsvResponse(csvBytes, "contacts.csv");
     }
 
     private ResponseEntity<byte[]> exportCompaniesToCsv() {
-        List<Company> companies = companyRepository.findAll();
-        byte[] csvBytes = exportListToCsv(companies, company -> company.getId() + "," + company.getName() + "," + company.getEvaluation(), "ID,CompanyName,Evaluation");
+        List<CompanyDTO> exportedCompanies = companyRepository.findAll().stream()
+                .map(companyMapper::companyToCompanyDTO)
+                .toList();
+
+        byte[] csvBytes = exportListToCsv(exportedCompanies,
+                company -> MessageFormat.format("{0},{1},{2},{3},{4}",
+                        company.id(),
+                        company.name(),
+                        company.evaluation(),
+                        company.incomeFromCompany(),
+                        company.contacts().stream().map(ContactBaseDTO::lastName)
+                ),
+                "ID,CompanyName,Evaluation,Income,Contacts");
+
         return buildCsvResponse(csvBytes, "contacts.csv");
     }
 

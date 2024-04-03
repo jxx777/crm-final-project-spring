@@ -1,29 +1,31 @@
-package itschool.crmfinalproject.controller;
+package itschool.crmfinalproject.utility;
 
 import itschool.crmfinalproject.exceptions.*;
+import itschool.crmfinalproject.model.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-
 import java.time.LocalDateTime;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
 @ControllerAdvice
-public class GlobalExceptionHandler {
+public class GlobalExceptionHandlerAdvice {
 
     private ResponseEntity<Object> createResponseEntity(HttpStatus status, String errorMessage, String error) {
-        Map<String, Object> body = new LinkedHashMap<>();
-        body.put("timestamp", LocalDateTime.now());
-        body.put("status", status.value());
-        body.put("error", error);
-        body.put("message", errorMessage);
-        return new ResponseEntity<>(body, status);
+        Response response = new Response(
+                status.value(),
+                status.name(),
+                errorMessage,
+                Map.of(
+                    "timestamp", LocalDateTime.now(),
+                    "error", error
+                )
+        );
+        return new ResponseEntity<>(response, status);
     }
-
 
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<Object> handleUserNotFoundException(UserNotFoundException ex) {
@@ -55,4 +57,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Object> handleAvatarUploadException(AvatarUploadException ex) {
         return createResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), "Avatar Upload Error");
     }
+
+    // Additional exception handlers can be defined here...
 }

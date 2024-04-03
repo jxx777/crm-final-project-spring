@@ -1,14 +1,19 @@
 package itschool.crmfinalproject.controller;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import itschool.crmfinalproject.model.contact.ContactBaseDTO;
+import itschool.crmfinalproject.model.contact.ContactDTO;
 import itschool.crmfinalproject.service.contact.ContactService;
+import itschool.crmfinalproject.utility.GenerateResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/contacts")
@@ -25,7 +30,8 @@ public class ContactController {
 
     @GetMapping("/all")
     public ResponseEntity<?> getAllContacts() {
-        return contactService.getAllContacts();
+        List<ContactDTO> allContacts = contactService.getAllContacts();
+        return ResponseEntity.ok(allContacts);
     }
 
     @GetMapping("/all/paged")
@@ -34,19 +40,21 @@ public class ContactController {
     }
 
     @DeleteMapping("/{contactId}")
-    public ResponseEntity<?> deleteContact(@PathVariable Long contactId) {
-        return contactService.deleteContactById(contactId);
+    public ResponseEntity<String> deleteContact(@PathVariable Long contactId) throws JsonProcessingException {
+        contactService.deleteContactById(contactId);
+        return GenerateResponse.success("Contact deleted", null);
     }
 
     @DeleteMapping("/all")
-    public ResponseEntity<?> deleteAllContacts() {
-        return contactService.deleteAllContacts();
+    public ResponseEntity<String> deleteAllContacts() throws JsonProcessingException {
+        contactService.deleteAllContacts();
+        return GenerateResponse.success("Contacts deleted", null);
     }
 
-    @PostMapping("/add")
-    public ResponseEntity<?> addContact(@Valid @RequestBody ContactBaseDTO newContact) {
+    @PostMapping
+    public ResponseEntity<String> addContact(@Valid @RequestBody ContactBaseDTO newContact) throws JsonProcessingException {
         contactService.addContact(newContact);
-        return ResponseEntity.ok().build();
+        return GenerateResponse.created("Contact Created", newContact);
     }
 
     @PatchMapping("/{contactId}")

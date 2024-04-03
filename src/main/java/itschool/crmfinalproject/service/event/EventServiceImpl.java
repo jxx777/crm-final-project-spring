@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,10 +27,10 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<EventDTO> findAllEventsWithContactDetails(Long contactId) {
+    public List<EventDTO> findAllEventsForContact(Long contactId) {
         return eventRepository.findAll()
                 .stream()
-                .filter(event -> event.getContactIds().contains(contactId.toString()))
+                .filter(event -> event.getContactIds().contains(contactId.toString())) // Saved as string in mongoDb
                 .map(eventMapper::eventToEventDto)
                 .toList();
     }
@@ -42,8 +41,9 @@ public class EventServiceImpl implements EventService {
         eventRepository.insert(newEvent);
     }
 
-    public Optional<EventDTO> findEventById(String eventId) {
+    public EventDTO findEventById(String eventId) {
         return eventRepository.findById(eventId)
-                .map(eventMapper::eventToEventDto);
+                .map(eventMapper::eventToEventDto)
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 }

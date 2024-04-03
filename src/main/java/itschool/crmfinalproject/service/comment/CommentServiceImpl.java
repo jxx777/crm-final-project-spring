@@ -48,12 +48,12 @@ public class CommentServiceImpl implements CommentService {
 
         // Create a new Comment object for the reply to ensure it's a separate entity
         Comment replyComment = new Comment();
-        replyComment.setEventId(parentComment.getEventId()); // Set the event ID for the reply
+        replyComment.setParentId(parentId); // Set the parent ID to link the reply to its parent
+//        replyComment.setEventId(parentComment.getEventId()); // Set the event ID for the reply
         replyComment.setAuthor(reply.getAuthor());
         replyComment.setText(reply.getText());
         replyComment.setTimestamp(java.time.LocalDateTime.now()); // Set the current timestamp for the reply
         replyComment.setAttachments(reply.getAttachments()); // Set attachments for the reply if any
-        replyComment.setParentId(parentId); // Set the parent ID to link the reply to its parent
 
         // Save the reply to the database to generate its ID
         replyComment = commentRepository.save(replyComment);
@@ -87,7 +87,18 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public void deleteComment(String id) {
+        Comment comment = commentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Comment not found with ID: " + id));
+
+        deleteReplies(comment);
         commentRepository.deleteById(id);
+    }
+
+    private void deleteReplies(Comment parentComment) {
+        parentComment.getReplies().forEach(reply -> {
+            deleteReplies(reply);
+            commentRepository.deleteById(reply.getId());
+        });
     }
 
     @Override

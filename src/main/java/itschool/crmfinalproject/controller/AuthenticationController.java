@@ -8,10 +8,9 @@ import itschool.crmfinalproject.service.auth.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,11 +18,13 @@ import java.util.Map;
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
+@Tag(name = "Authentication Controller", description = "Controller for handling authentication operations.")
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
     private final JwtUtil jwtUtil;
 
+    @Operation(summary = "Register a new user", description = "Endpoint to register a new user in the system.")
     @PostMapping("/register")
     public ResponseEntity<?> signUp(@RequestBody RequestRegistrationDTO requestRegistrationDTO) {
         try {
@@ -33,33 +34,26 @@ public class AuthenticationController {
         }
     }
 
+    @Operation(summary = "Sign in", description = "Endpoint for user authentication. Returns access and refresh tokens.")
     @PostMapping("/signin")
     public ResponseEntity<?> signIn(@RequestBody RequestAuthenticationDTO requestAuthenticationDTO) {
         try {
-            // Use accessAccount to authenticate the user
             ResponseEntity<?> authResponse = authenticationService.accessAccount(requestAuthenticationDTO);
-
-            // If authentication fails, forward the error response
-            // is2xxSuccessful() - Not falling into 200-299
             if (!authResponse.getStatusCode().is2xxSuccessful()) {
                 return authResponse;
             }
-
-            // If authentication is successful, generate both access and refresh tokens
             String accessToken = jwtUtil.generateAccessToken(requestAuthenticationDTO.username());
             String refreshToken = jwtUtil.generateRefreshToken(requestAuthenticationDTO.username());
-
-            // Create a response map or a DTO to send both tokens back to the client
             Map<String, String> tokens = new HashMap<>();
             tokens.put("accessToken", accessToken);
             tokens.put("refreshToken", refreshToken);
-
             return ResponseEntity.ok(tokens);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Error processing request");
         }
     }
 
+    @Operation(summary = "Refresh the access token", description = "Endpoint to refresh the access token using a refresh token.")
     @PostMapping("/refresh")
     public ResponseEntity<?> refresh(@RequestBody Map<String, String> tokenRequest) {
         String refreshToken = tokenRequest.get("refreshToken");
@@ -67,9 +61,7 @@ public class AuthenticationController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token");
         }
         String username = jwtUtil.extractUsername(refreshToken);
-
         String newAccessToken = jwtUtil.generateAccessToken(username);
-
         Map<String, String> tokens = new HashMap<>();
         tokens.put("accessToken", newAccessToken);
         return ResponseEntity.ok(tokens);

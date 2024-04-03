@@ -1,5 +1,6 @@
 package itschool.crmfinalproject.controller;
 
+import itschool.crmfinalproject.entity.user.Role;
 import itschool.crmfinalproject.model.user.RoleUpdateDTO;
 import itschool.crmfinalproject.model.user.UserDTO;
 import itschool.crmfinalproject.service.app.AvatarService;
@@ -23,23 +24,27 @@ public class UserController {
     private final RoleService roleService;
 
     @GetMapping("/all")
-    public List<UserDTO> getAllUsers() {
-        return userService.getAllUsers();
+    public ResponseEntity<List<UserDTO>> getAllUsers() {
+        List<UserDTO> allUsers = userService.getAllUsers();
+        return ResponseEntity.ok(allUsers);
     }
 
     @GetMapping("/usernames")
-    public List<String> getAllUsersUsernames() {
-        return userService.getAllUsersUsernames();
+    public ResponseEntity<List<String>> getAllUsersUsernames() {
+        List<String> allUsersUsernames = userService.getAllUsersUsernames();
+        return ResponseEntity.ok(allUsersUsernames);
     }
 
     @GetMapping("/nicknames")
-    public List<String> getAllUsersNicknames() {
-        return userService.getAllUsersEmails();
+    public ResponseEntity<List<String>> getAllUsersNicknames() {
+        List<String> allUsersEmails = userService.getAllUsersEmails();
+        return ResponseEntity.ok(allUsersEmails);
     }
 
     @GetMapping("/roles")
     public ResponseEntity<?> getAllRoles() {
-        return roleService.getRoles();
+        List<Role> rolesList = roleService.getRoles();
+        return ResponseEntity.ok(rolesList);
     }
 
     @GetMapping("/{id}")
@@ -57,33 +62,33 @@ public class UserController {
     @GetMapping("/avatar/{id}")
     public ResponseEntity<byte[]> getUserAvatar(@PathVariable Long id) {
         byte[] avatar = avatarService.getUserAvatar(id);
-        return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG) // Adjust based on the actual image type
+        return ResponseEntity.ok()
+                .contentType(MediaType.IMAGE_JPEG) // Adjust based on the actual image type
                 .body(avatar);
     }
 
     @PatchMapping("/email/{id}")
-    public ResponseEntity<?> updateUserEmail(@PathVariable Long id, @RequestBody UserDTO userDTO) {
+    public ResponseEntity<UserDTO> updateUserEmail(@PathVariable Long id, @RequestBody UserDTO userDTO) {
         UserDTO user = userService.updateUserEmail(id, userDTO.email());
         return ResponseEntity.ok(user);
     }
 
     @PatchMapping("/username/{id}")
-    public ResponseEntity<?> updateUsername(@PathVariable Long id, @RequestBody UserDTO userDTO) {
+    public ResponseEntity<UserDTO> updateUsername(@PathVariable Long id, @RequestBody UserDTO userDTO) {
         UserDTO user = userService.updateUsername(id, userDTO.username());
         return ResponseEntity.ok(user);
     }
 
     @PatchMapping("/role/{userId}")
-    public ResponseEntity<?> updateUserRoles(@PathVariable Long userId, @RequestBody RoleUpdateDTO roleUpdateDTO) {
-        return userService.updateUserRole(userId, roleUpdateDTO.role());
+    public ResponseEntity<UserDTO> updateUserRoles(@PathVariable Long userId, @RequestBody RoleUpdateDTO roleUpdateDTO) {
+        UserDTO userToUpdate = userService.updateUserRole(userId, roleUpdateDTO.role());
+        return ResponseEntity.ok(userToUpdate);
     }
-
 
     @PutMapping("/avatar/{id}")
     public ResponseEntity<?> uploadUserAvatar(@PathVariable Long id, @RequestParam("avatar") MultipartFile avatar) {
         return userService.saveUserAvatar(id, avatar);
     }
-
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUserById(@PathVariable Long id) {

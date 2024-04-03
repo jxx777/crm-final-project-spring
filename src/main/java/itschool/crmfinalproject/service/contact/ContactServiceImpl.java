@@ -13,9 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -34,24 +32,18 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    public ResponseEntity<?> deleteContactById(Long contactId) {
-        if (contactRepository.findById(contactId).isEmpty()) {
-            return ResponseEntity.notFound().build();
+    public void deleteContactById(Long contactId) {
+        if (!contactRepository.existsById(contactId)) {
+            throw new ContactNotFoundException("Contact not found with ID: " + contactId);
         }
-
         contactRepository.deleteById(contactId);
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("message", "Contact with ID " + contactId + " was deleted.");
-        response.put("contactId", contactId);
-        return ResponseEntity.ok().body(response);
     }
 
 
+
     @Override
-    public ResponseEntity<?> deleteAllContacts() {
+    public void deleteAllContacts() {
         contactRepository.deleteAll();
-        return ResponseEntity.ok().body("All contacts were deleted.");
     }
 
     @Override
@@ -62,12 +54,10 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    public ResponseEntity<?> getAllContacts() {
-        List<ContactDTO> allContacts = contactRepository.findAll().stream()
+    public List<ContactDTO> getAllContacts() {
+        return contactRepository.findAll().stream()
                 .map(contactMapper::contactToContactDto)
                 .toList();
-
-        return ResponseEntity.ok(allContacts);
     }
 
     @Override

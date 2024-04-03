@@ -6,18 +6,20 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 
+import java.util.List;
+
 public interface ContactService {
     ResponseEntity<?> getContactById(Long contactId);
 
     ResponseEntity<Page<ContactDTO>> getAllContactsPaged(Pageable pageable);
 
-    ResponseEntity<?> getAllContacts();
+    List<ContactDTO> getAllContacts();
 
     ResponseEntity<?> updateContact(Long contactId, ContactBaseDTO contactDTO);
 
-    ResponseEntity<?> deleteContactById(Long contactId);
+    void deleteContactById(Long contactId);
 
-    ResponseEntity<?> deleteAllContacts();
+    void deleteAllContacts();
 
     void addContact(ContactBaseDTO contactDTO);
 }

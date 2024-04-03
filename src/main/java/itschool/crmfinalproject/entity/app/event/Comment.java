@@ -15,12 +15,17 @@ import java.util.*;
 public class Comment {
     @Id
     private String id;
+
     private String eventId;
+
     private String author;
+
     private String text;
+
     private LocalDateTime timestamp;
 
     private Set<String> likes = new HashSet<>(); // Initialize the set here
+
     private List<String> attachments;  // List of attachment URLs
 
     private String parentId; // ID of the parent comment, null if top-level

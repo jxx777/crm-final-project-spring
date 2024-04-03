@@ -1,7 +1,9 @@
 package itschool.crmfinalproject.service.app;
 
-import org.springframework.http.ResponseEntity;
+import itschool.crmfinalproject.entity.user.Role;
+
+import java.util.List;
 
 public interface RoleService {
-    ResponseEntity<?> getRoles();
+    List<Role> getRoles();
 }

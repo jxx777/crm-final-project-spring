@@ -54,13 +54,11 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public ResponseEntity<?> getAllCompanies() {
-        List<CompanyBaseDTO> allCompanies = companyRepository.findAll()
+    public List<CompanyBaseDTO> getAllCompanies() {
+        return companyRepository.findAll()
                 .stream()
                 .map(companyMapper::companyToCompanyBaseDTO)
                 .toList();
-
-        return ResponseEntity.ok(allCompanies);
     }
 
     @Override

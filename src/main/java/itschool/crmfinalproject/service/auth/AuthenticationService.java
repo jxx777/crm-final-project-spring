@@ -39,7 +39,7 @@ public class AuthenticationService {
             return GenerateResponse.notFound("User not found", null);
         }
         if (!encoder.matches(param.password(), userDetails.getPassword())) {
-            return GenerateResponse.badRequest("Password not matched", null);
+            return GenerateResponse.badRequest("Invalid password", null);
         }
         return GenerateResponse.success("Sign In Success", jwtUtil.generateAccessToken(userDetails.getUsername()));
     }

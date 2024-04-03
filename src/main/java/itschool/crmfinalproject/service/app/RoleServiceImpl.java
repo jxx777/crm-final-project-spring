@@ -3,7 +3,6 @@ package itschool.crmfinalproject.service.app;
 import itschool.crmfinalproject.entity.user.Role;
 import itschool.crmfinalproject.repository.RoleRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -22,9 +21,8 @@ public class RoleServiceImpl implements RoleService {
     private final RoleRepository roleRepository;
 
 
-    public ResponseEntity<?> getRoles() {
-        List<Role> allRoles = roleRepository.findAll();
-        return ResponseEntity.ok(allRoles);
+    public List<Role> getRoles() {
+        return roleRepository.findAll();
     }
 
     public Collection<? extends GrantedAuthority> getEffectiveAuthorities(Set<Role> roles) {

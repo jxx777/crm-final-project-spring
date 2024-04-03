@@ -26,7 +26,7 @@ public interface UserService extends UserDetailsService {
 
     UserDTO updateUsername(Long userId, String newUsername);
 
-    ResponseEntity<?> updateUserRole(Long userId, RoleEnum newRole);
+    UserDTO updateUserRole(Long userId, RoleEnum newRole);
 
     ResponseEntity<?> deleteById(Long id);
 

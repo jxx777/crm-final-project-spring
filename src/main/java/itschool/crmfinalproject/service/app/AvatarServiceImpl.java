@@ -13,7 +13,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class AvatarServiceImpl implements AvatarService {
 
-    private final UserRepository userRepository; // DI User Repository
+    private final UserRepository userRepository;
 
     @Override
     public void saveUserAvatar(Long userId, MultipartFile avatarFile) {

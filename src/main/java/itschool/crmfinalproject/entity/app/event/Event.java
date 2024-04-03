@@ -17,12 +17,18 @@ import java.util.Set;
 public class Event {
     @Id
     private String id;
+
     private String title;
+
     private LocalDateTime time;
+
     private String description;
+
     private EventTypeEnum eventType;
+
     private Map<String, Object> details = new HashMap<>();
 
     private Set<String> commentIds = new HashSet<>();
+
     private Set<String> contactIds = new HashSet<>();
 }

@@ -1,4 +1,3 @@
 package itschool.crmfinalproject.model;
 
-public record Response(String message, Object data, Integer code) {
-}
+public record Response(Integer statusCode, String statusName, String message, Object data) { }

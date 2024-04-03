@@ -29,20 +29,20 @@ public class NoSQLSeeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        if (eventRepository.count() == 0) {
-            List<String> contactIds = contactRepository.findAll().stream()
-                    .map(Contact::getId)
-                    .map(Object::toString)
-                    .collect(Collectors.toList());
-
-            IntStream.range(0, 50).forEach(i -> {  // Adjusted to create 50 events
-                Event event = createAndSaveEvent(contactIds);
-                Set<String> allCommentIds = createAndSaveCommentsForEvent(event);
-
-                event.setCommentIds(allCommentIds);
-                eventRepository.save(event);
-            });
-        }
+//        if (eventRepository.count() == 0) {
+//            List<String> contactIds = contactRepository.findAll().stream()
+//                    .map(Contact::getId)
+//                    .map(Object::toString)
+//                    .collect(Collectors.toList());
+//
+//            IntStream.range(0, 50).forEach(i -> {  // Adjusted to create 50 events
+//                Event event = createAndSaveEvent(contactIds);
+//                Set<String> allCommentIds = createAndSaveCommentsForEvent(event);
+//
+//                event.setCommentIds(allCommentIds);
+//                eventRepository.save(event);
+//            });
+//        }
     }
 
     private Event createAndSaveEvent(List<String> contactIds) {

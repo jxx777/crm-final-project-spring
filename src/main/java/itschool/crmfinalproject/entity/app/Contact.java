@@ -36,7 +36,7 @@ public class Contact extends BaseEntity {
     @Embedded
     private Address address;
 
-    @Column(name = "description")
+    @Column(name = "description", length = 2048)
     private String description;
 
     @ElementCollection

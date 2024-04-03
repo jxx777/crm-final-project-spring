@@ -1,5 +1,6 @@
 package itschool.crmfinalproject.controller;
 
+import itschool.crmfinalproject.model.company.CompanyBaseDTO;
 import itschool.crmfinalproject.model.company.CompanyDTO;
 import itschool.crmfinalproject.service.company.CompanyService;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/companies")
@@ -32,7 +35,8 @@ public class CompanyController {
     @SneakyThrows
     @GetMapping("/all")
     public ResponseEntity<?> getAllCompanies() {
-        return companyService.getAllCompanies();
+        List<CompanyBaseDTO> allCompanies = companyService.getAllCompanies();
+        return ResponseEntity.ok(allCompanies);
     }
 
     @SneakyThrows
