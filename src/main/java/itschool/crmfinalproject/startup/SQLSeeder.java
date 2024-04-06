@@ -14,9 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.IntStream;
 
 @Component
@@ -37,15 +35,19 @@ public class SQLSeeder implements CommandLineRunner {
     @Transactional
     public void run(String... args) {
         if (sectorRepository.count() == 0 && companyRepository.count() == 0 && contactRepository.count() == 0) {
-            IntStream.range(0, 10).forEach(i -> {
+            IntStream.range(0, 5).forEach(i -> {
                 Sector sector = createUniqueSector();
                 sectorRepository.save(sector);
 
-                IntStream.range(0, 10).forEach(j -> {
+                // Vary the number of companies per sector
+                int companiesInSector = random.nextInt(1, 11); // 1 to 10 companies
+                IntStream.range(0, companiesInSector).forEach(j -> {
                     Company company = createUniqueCompany(sector);
                     companyRepository.save(company);
 
-                    IntStream.range(0, 10).forEach(k -> {
+                    // Vary the number of contacts per company
+                    int contactsInCompany = random.nextInt(1, 21); // 1 to 20 contacts
+                    IntStream.range(0, contactsInCompany).forEach(k -> {
                         Contact contact = createUniqueContact(company);
                         contactRepository.save(contact);
                     });
@@ -86,7 +88,7 @@ public class SQLSeeder implements CommandLineRunner {
             contact.setPhoneNumber(faker.phoneNumber().phoneNumber());
             contact.setPosition(faker.job().position());
             contact.setDescription(faker.lorem().paragraph());
-            contact.setTags(new HashSet<>(faker.lorem().words(5)));
+            contact.setTags(generateSalesTags());
             contact.setAddress(createAddress());
             contact.setCompany(company);
             contact.setCreatedAt(LocalDateTime.now().minusDays(random.nextInt(30)));
@@ -95,6 +97,14 @@ public class SQLSeeder implements CommandLineRunner {
         return contact;
     }
 
+    // Generate a set of sales-related tags
+    // Consider updating generateSalesTags() for more variation
+    private Set<String> generateSalesTags() {
+        List<String> salesTags = new ArrayList<>(List.of("Lead", "Prospect", "Converted", "Hot", "Cold", "Follow-Up", "In-Negotiation", "Long-Term", "High-Value", "New", "Urgent", "Low-Priority", "High-Priority", "Consultation"));
+        Collections.shuffle(salesTags);
+        // Select a random subset of tags, ensuring at least one tag is selected
+        return new HashSet<>(salesTags.subList(0, random.nextInt(1, Math.min(5, salesTags.size()))));
+    }
     private Address createAddress() {
         Address address = new Address();
         address.setStreet(faker.address().streetAddress());

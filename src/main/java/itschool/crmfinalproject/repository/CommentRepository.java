@@ -4,15 +4,15 @@ import itschool.crmfinalproject.entity.app.event.Comment;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface CommentRepository extends MongoRepository<Comment, String> {
     List<Comment> findByAuthor(String author);
+
     List<Comment> findByEventId(String eventId);
 
     // Add method to delete a comment by its ID
-    void deleteById(String id);
+//    void deleteById(String id);
 
     // Add method to find a comment by its ID
-    Optional<Comment> findById(String id);
+//    Optional<Comment> findById(String id);
 }

@@ -18,9 +18,9 @@ public class Role {
 
     @Column(unique = true)
     @Enumerated(EnumType.STRING)
-    private RoleEnum name; // For example, "USER", "EMPLOYEE", "ADMIN"
+    private RoleEnum role; // For example, "USER", "EMPLOYEE", "ADMIN"
 
-    public Role(final RoleEnum name) {
-        this.name = name;
+    public Role(final RoleEnum role) {
+        this.role = role;
     }
 }

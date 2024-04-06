@@ -7,4 +7,5 @@ public record ContactBaseDTO(
         String lastName,
         String position,
         String phoneNumber
-) { }
+) {
+}

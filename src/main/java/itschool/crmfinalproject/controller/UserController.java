@@ -1,13 +1,15 @@
 package itschool.crmfinalproject.controller;
 
-import itschool.crmfinalproject.entity.user.Role;
-import itschool.crmfinalproject.model.user.RoleUpdateDTO;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import itschool.crmfinalproject.model.user.UserDTO;
 import itschool.crmfinalproject.service.app.AvatarService;
-import itschool.crmfinalproject.service.app.RoleService;
 import itschool.crmfinalproject.service.app.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,81 +19,72 @@ import java.util.List;
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
+@Tag(name = "User Service", description = "Responsible for user data management, supporting information retrieval and user profile updates.")
 public class UserController {
 
     private final UserService userService;
     private final AvatarService avatarService;
-    private final RoleService roleService;
 
+    @Operation(summary = "Get all users", description = "Retrieve a list of all users.")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved all users", content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserDTO.class)))
     @GetMapping("/all")
     public ResponseEntity<List<UserDTO>> getAllUsers() {
-        List<UserDTO> allUsers = userService.getAllUsers();
-        return ResponseEntity.ok(allUsers);
+        return ResponseEntity.ok(userService.getAllUsers());
     }
 
-    @GetMapping("/usernames")
-    public ResponseEntity<List<String>> getAllUsersUsernames() {
-        List<String> allUsersUsernames = userService.getAllUsersUsernames();
-        return ResponseEntity.ok(allUsersUsernames);
-    }
-
-    @GetMapping("/nicknames")
-    public ResponseEntity<List<String>> getAllUsersNicknames() {
-        List<String> allUsersEmails = userService.getAllUsersEmails();
-        return ResponseEntity.ok(allUsersEmails);
-    }
-
-    @GetMapping("/roles")
-    public ResponseEntity<?> getAllRoles() {
-        List<Role> rolesList = roleService.getRoles();
-        return ResponseEntity.ok(rolesList);
-    }
-
+    @Operation(summary = "Get user by ID", description = "Retrieve details of a specific user by their ID.")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved user details", content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserDTO.class)))
+    @ApiResponse(responseCode = "404", description = "User not found")
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> getUserById(@PathVariable Long id) {
-        UserDTO user = userService.findById(id);
-        return ResponseEntity.ok(user);
+        return ResponseEntity.ok(userService.findById(id));
     }
 
+    @Operation(summary = "Get user by username", description = "Retrieve details of a user by their username.")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved user details", content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserDTO.class)))
+    @ApiResponse(responseCode = "404", description = "User not found")
     @GetMapping("/username/{username}")
     public ResponseEntity<UserDTO> getUserByUsername(@PathVariable String username) {
-        UserDTO user = userService.findByUsername(username);
-        return ResponseEntity.ok(user);
+        return ResponseEntity.ok(userService.findByUsername(username));
     }
 
-    @GetMapping("/avatar/{id}")
-    public ResponseEntity<byte[]> getUserAvatar(@PathVariable Long id) {
-        byte[] avatar = avatarService.getUserAvatar(id);
-        return ResponseEntity.ok()
-                .contentType(MediaType.IMAGE_JPEG) // Adjust based on the actual image type
-                .body(avatar);
-    }
-
+    @Operation(summary = "Update user email", description = "Update the email address of a user.")
+    @ApiResponse(responseCode = "200", description = "Successfully updated user email")
+    @ApiResponse(responseCode = "404", description = "User not found")
     @PatchMapping("/email/{id}")
     public ResponseEntity<UserDTO> updateUserEmail(@PathVariable Long id, @RequestBody UserDTO userDTO) {
-        UserDTO user = userService.updateUserEmail(id, userDTO.email());
-        return ResponseEntity.ok(user);
+        return ResponseEntity.ok(userService.updateUserEmail(id, userDTO.email()));
     }
 
+    @Operation(summary = "Update username", description = "Update the username of a user.")
+    @ApiResponse(responseCode = "200", description = "Successfully updated username")
+    @ApiResponse(responseCode = "404", description = "User not found")
     @PatchMapping("/username/{id}")
     public ResponseEntity<UserDTO> updateUsername(@PathVariable Long id, @RequestBody UserDTO userDTO) {
-        UserDTO user = userService.updateUsername(id, userDTO.username());
-        return ResponseEntity.ok(user);
+        return ResponseEntity.ok(userService.updateUsername(id, userDTO.username()));
     }
 
-    @PatchMapping("/role/{userId}")
-    public ResponseEntity<UserDTO> updateUserRoles(@PathVariable Long userId, @RequestBody RoleUpdateDTO roleUpdateDTO) {
-        UserDTO userToUpdate = userService.updateUserRole(userId, roleUpdateDTO.role());
-        return ResponseEntity.ok(userToUpdate);
+    @Operation(summary = "Delete user", description = "Delete a user by their ID.")
+    @ApiResponse(responseCode = "200", description = "User successfully deleted")
+    @ApiResponse(responseCode = "404", description = "User not found")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteUserById(@PathVariable Long id) {
+        return userService.deleteById(id);
     }
 
+    @Operation(summary = "Upload user avatar", description = "Upload an avatar image for a user.")
+    @ApiResponse(responseCode = "200", description = "Avatar uploaded successfully")
+    @ApiResponse(responseCode = "404", description = "User not found")
     @PutMapping("/avatar/{id}")
     public ResponseEntity<?> uploadUserAvatar(@PathVariable Long id, @RequestParam("avatar") MultipartFile avatar) {
         return userService.saveUserAvatar(id, avatar);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteUserById(@PathVariable Long id) {
-        return userService.deleteById(id);
+    @Operation(summary = "Retrieve user avatar", description = "Retrieve avatar image for a user.")
+    @ApiResponse(responseCode = "200", description = "Avatar retrieved successfully")
+    @ApiResponse(responseCode = "404", description = "User or avatar not found")
+    @GetMapping("/avatar/{id}")
+    public byte[] getUserAvatar(@PathVariable Long id) {
+        return avatarService.getUserAvatar(id);
     }
 }

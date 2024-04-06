@@ -1,5 +1,6 @@
 package itschool.crmfinalproject.entity.app.event;
 
+import itschool.crmfinalproject.model.contact.ContactBaseDTO;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
@@ -30,5 +31,5 @@ public class Event {
 
     private Set<String> commentIds = new HashSet<>();
 
-    private Set<String> contactIds = new HashSet<>();
+    private Set<ContactBaseDTO> contacts = new HashSet<>();
 }

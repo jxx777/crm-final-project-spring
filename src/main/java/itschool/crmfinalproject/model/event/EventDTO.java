@@ -1,6 +1,7 @@
 package itschool.crmfinalproject.model.event;
 
 import itschool.crmfinalproject.entity.app.event.EventTypeEnum;
+import itschool.crmfinalproject.model.contact.ContactBaseDTO;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,5 +16,6 @@ public record EventDTO(
         EventTypeEnum eventType,
         Map<String, Object> details,
         List<String> commentIds,
-        Set<String> contactIds
-) {}
+        Set<ContactBaseDTO> contacts
+) {
+}

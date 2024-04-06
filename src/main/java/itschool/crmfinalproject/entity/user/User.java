@@ -22,6 +22,10 @@ public class User extends BaseEntity implements UserDetails {
     private String email;
     private String password;
 
+    private String firstName;
+    private String lastName;
+    private String phoneNumber;
+
     private String registerToken;
     private boolean accountNonExpired;
     private boolean accountNonLocked;
@@ -40,7 +44,7 @@ public class User extends BaseEntity implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singleton(new SimpleGrantedAuthority(role.getName().name()));
+        return Collections.singleton(new SimpleGrantedAuthority(role.getRole().name()));
     }
 
     @Override

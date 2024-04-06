@@ -21,4 +21,5 @@ public record ContactDTO(
         Address address,
         String description,
         Set<String> tags
-) { }
+) {
+}

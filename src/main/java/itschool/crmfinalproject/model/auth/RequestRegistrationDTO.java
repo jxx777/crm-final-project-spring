@@ -8,4 +8,5 @@ public record RequestRegistrationDTO(
         String firstName,
         String lastName,
         String phoneNumber
-) { }
+) {
+}

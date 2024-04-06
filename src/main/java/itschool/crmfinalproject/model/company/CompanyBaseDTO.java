@@ -5,4 +5,5 @@ public record CompanyBaseDTO(
         String name,
         Double evaluation,
         Double incomeFromCompany
-) { }
+) {
+}

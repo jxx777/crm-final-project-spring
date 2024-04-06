@@ -1,6 +1,10 @@
 package itschool.crmfinalproject.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import itschool.crmfinalproject.configuration.auth.JwtUtil;
 import itschool.crmfinalproject.model.auth.RequestAuthenticationDTO;
 import itschool.crmfinalproject.model.auth.RequestRegistrationDTO;
@@ -8,9 +12,10 @@ import itschool.crmfinalproject.service.auth.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,15 +23,17 @@ import java.util.Map;
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
-@Tag(name = "Authentication Controller", description = "Controller for handling authentication operations.")
+@Tag(name = "Authentication Service", description = "Handles user authentication processes, token generation, and session management.")
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
     private final JwtUtil jwtUtil;
 
     @Operation(summary = "Register a new user", description = "Endpoint to register a new user in the system.")
+    @ApiResponse(responseCode = "200", description = "User registered successfully")
+    @ApiResponse(responseCode = "400", description = "Invalid user data provided")
     @PostMapping("/register")
-    public ResponseEntity<?> signUp(@RequestBody RequestRegistrationDTO requestRegistrationDTO) {
+    public ResponseEntity<?> signUp(@RequestBody @Parameter(description = "Registration data") RequestRegistrationDTO requestRegistrationDTO) {
         try {
             return authenticationService.createAccount(requestRegistrationDTO);
         } catch (JsonProcessingException e) {
@@ -35,6 +42,8 @@ public class AuthenticationController {
     }
 
     @Operation(summary = "Sign in", description = "Endpoint for user authentication. Returns access and refresh tokens.")
+    @ApiResponse(responseCode = "200", description = "Authentication successful")
+    @ApiResponse(responseCode = "401", description = "Authentication failed")
     @PostMapping("/signin")
     public ResponseEntity<?> signIn(@RequestBody RequestAuthenticationDTO requestAuthenticationDTO) {
         try {
@@ -54,6 +63,8 @@ public class AuthenticationController {
     }
 
     @Operation(summary = "Refresh the access token", description = "Endpoint to refresh the access token using a refresh token.")
+    @ApiResponse(responseCode = "200", description = "Token refreshed successfully")
+    @ApiResponse(responseCode = "401", description = "Invalid refresh token")
     @PostMapping("/refresh")
     public ResponseEntity<?> refresh(@RequestBody Map<String, String> tokenRequest) {
         String refreshToken = tokenRequest.get("refreshToken");

@@ -10,7 +10,6 @@ import org.mapstruct.MappingTarget;
 public interface ContactMapper {
     ContactDTO contactToContactDto(Contact contact);
 
-
     Contact contactDtoToContact(ContactDTO contactDTO);
 
     ContactBaseDTO contactToContactBaseDto(Contact contact);

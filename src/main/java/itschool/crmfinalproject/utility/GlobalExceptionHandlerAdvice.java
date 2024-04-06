@@ -58,5 +58,10 @@ public class GlobalExceptionHandlerAdvice {
         return createResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), "Avatar Upload Error");
     }
 
+    @ExceptionHandler(TeapotException.class)
+    public ResponseEntity<Object> handleImATeapotException(TeapotException ex) {
+        return createResponseEntity(HttpStatus.I_AM_A_TEAPOT, ex.getMessage(), "I'm a teapot");
+    }
+
     // Additional exception handlers can be defined here...
 }

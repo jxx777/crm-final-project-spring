@@ -23,10 +23,9 @@ public class ContactServiceImpl implements ContactService {
     private final ContactMapper contactMapper;
 
     @Override
-    public ResponseEntity<?> getContactById(Long contactId) {
+    public ContactDTO getContactById(Long contactId) {
         return contactRepository.findById(contactId)
                 .map(contactMapper::contactToContactDto)
-                .map(ResponseEntity::ok)
                 .orElseThrow(() -> new ContactNotFoundException("Contact with the provided ID does not exist")
         );
     }
@@ -38,7 +37,6 @@ public class ContactServiceImpl implements ContactService {
         }
         contactRepository.deleteById(contactId);
     }
-
 
 
     @Override

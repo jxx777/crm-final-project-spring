@@ -1,6 +1,7 @@
 package itschool.crmfinalproject.model.company;
 
 import itschool.crmfinalproject.model.contact.ContactBaseDTO;
+
 import java.util.List;
 
 public record CompanyDTO(
@@ -9,4 +10,5 @@ public record CompanyDTO(
         Double evaluation,
         Double incomeFromCompany,
         List<ContactBaseDTO> contacts
-) { }
+) {
+}

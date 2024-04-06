@@ -14,7 +14,7 @@ import java.util.Set;
 @Table(name = "sectors")
 public class Sector extends BaseEntity {
 
-    @Column(unique=true)
+    @Column(unique = true)
     private String sectorName;
 
     private Double marketCap;

@@ -10,14 +10,10 @@ import org.mapstruct.Mapping;
 public interface CompanyMapper {
     CompanyBaseDTO companyToCompanyBaseDTO(Company company);
 
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
     Company companyDtoBaseToCompany(CompanyBaseDTO companyDTO);
 
     @Mapping(target = "contacts", source = "contacts")
     CompanyDTO companyToCompanyDTO(Company company);
 
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
     Company companyDtoToCompany(CompanyDTO companyDTO);
 }

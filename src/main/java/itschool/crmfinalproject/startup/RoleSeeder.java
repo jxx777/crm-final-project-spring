@@ -19,9 +19,9 @@ public class RoleSeeder {
     @Transactional
     public void seedRolesTable() {
         EnumSet.allOf(RoleEnum.class).forEach(roleEnum -> {
-            if (roleRepository.findByName(roleEnum).isEmpty()) {
+            if (roleRepository.findByRole(roleEnum).isEmpty()) {
                 Role role = new Role();
-                role.setName(roleEnum);
+                role.setRole(roleEnum);
                 roleRepository.save(role);
             }
         });

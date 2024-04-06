@@ -1,11 +1,13 @@
 package itschool.crmfinalproject.service.comment;
 
 import itschool.crmfinalproject.entity.app.event.Comment;
+import itschool.crmfinalproject.entity.app.event.Event;
 import itschool.crmfinalproject.repository.CommentRepository;
 import itschool.crmfinalproject.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 
@@ -33,34 +35,47 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public Comment postComment(String eventId, String author, String text, List<String> attachments) {
+        // Create and save the new comment
         Comment comment = new Comment();
         comment.setEventId(eventId);
+
         comment.setAuthor(author);
         comment.setText(text);
-        comment.setTimestamp(java.time.LocalDateTime.now());
         comment.setAttachments(attachments);
-        return commentRepository.insert(comment);
+
+        comment.setTimestamp(LocalDateTime.now());
+        comment = commentRepository.insert(comment);
+
+        // Retrieve the associated event
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new RuntimeException("Event not found with ID: " + eventId));
+
+        event.getCommentIds().add(comment.getId());
+
+        // Save the updated event
+        eventRepository.save(event);
+
+        return comment;
     }
 
     @Override
     public Comment addReply(String parentId, Comment reply) {
-        Comment parentComment = commentRepository.findById(parentId).orElseThrow(() -> new RuntimeException("Comment not found with ID: " + parentId));
+        Comment parentComment = commentRepository.findById(parentId)
+                .orElseThrow(() -> new RuntimeException("Comment not found with ID: " + parentId));
 
-        // Create a new Comment object for the reply to ensure it's a separate entity
         Comment replyComment = new Comment();
-        replyComment.setParentId(parentId); // Set the parent ID to link the reply to its parent
-//        replyComment.setEventId(parentComment.getEventId()); // Set the event ID for the reply
+        replyComment.setParentId(parentId);
+        replyComment.setEventId(parentComment.getEventId());
         replyComment.setAuthor(reply.getAuthor());
         replyComment.setText(reply.getText());
-        replyComment.setTimestamp(java.time.LocalDateTime.now()); // Set the current timestamp for the reply
-        replyComment.setAttachments(reply.getAttachments()); // Set attachments for the reply if any
+        replyComment.setTimestamp(LocalDateTime.now());
+        replyComment.setAttachments(reply.getAttachments());
 
-        // Save the reply to the database to generate its ID
-        replyComment = commentRepository.save(replyComment);
-
-        // Now that the reply has an ID, add it to the parent comment's replies and save the parent comment
+        commentRepository.save(replyComment);
         parentComment.addReply(replyComment);
-        return commentRepository.save(parentComment);
+        commentRepository.save(parentComment);
+
+        return replyComment;
     }
 
     @Override
@@ -90,19 +105,36 @@ public class CommentServiceImpl implements CommentService {
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Comment not found with ID: " + id));
 
+        // Checking if the comment is a toplevel comment (direct to event), or child of another comment (nested)
+        if (comment.getParentId() != null) {
+            Comment parentComment = commentRepository.findById(comment.getParentId())
+                    .orElseThrow(() -> new RuntimeException("Parent comment not found with ID: " + comment.getParentId()));
+
+            parentComment.removeReply(comment);
+            commentRepository.save(parentComment);
+        } else {
+            Event event = eventRepository.findById(comment.getEventId())
+                    .orElseThrow(() -> new RuntimeException("Event not found with ID: " + comment.getEventId()));
+
+            event.getCommentIds().remove(comment.getId());
+            eventRepository.save(event);
+        }
+
+        // Delete the comment and its replies recursively
         deleteReplies(comment);
         commentRepository.deleteById(id);
     }
 
-    private void deleteReplies(Comment parentComment) {
-        parentComment.getReplies().forEach(reply -> {
-            deleteReplies(reply);
-            commentRepository.deleteById(reply.getId());
+    private void deleteReplies(Comment comment) {
+        comment.getReplies().forEach(reply -> {
+            deleteReplies(reply);  // Recursive deletion of nested replies
+            commentRepository.deleteById(reply.getId());  // Delete the reply itself
         });
     }
 
     @Override
     public Comment getCommentById(String id) {
-        return commentRepository.findById(id).orElseThrow(() -> new RuntimeException("Comment not found with ID: " + id));
+        return commentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Comment not found with ID: " + id));
     }
 }

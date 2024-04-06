@@ -22,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -121,7 +120,7 @@ public class UserServiceImpl implements UserService {
         user.setAvatar(null);
 
         // Assign a default role
-        Role defaultRole = roleRepository.findByName(RoleEnum.USER).orElseThrow(() -> new IllegalStateException("User Role not found."));
+        Role defaultRole = roleRepository.findByRole(RoleEnum.USER).orElseThrow(() -> new IllegalStateException("User Role not found."));
         user.setRole(defaultRole);
 
         // Save the user to the repository
@@ -157,28 +156,19 @@ public class UserServiceImpl implements UserService {
 
     public UserDTO updateUserRole(Long userId, RoleEnum roleEnum) {
         User user = userRepository.findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found with username: " + userId));
-        Role role = roleRepository.findByName(roleEnum).orElseThrow(() -> new IllegalStateException("Role not found."));
+        Role role = roleRepository.findByRole(roleEnum).orElseThrow(() -> new IllegalStateException("Role not found."));
         user.setRole(role);
         return userMapper.userToUserDto(user);
     }
 
+    @SneakyThrows
     @Override
     public ResponseEntity<?> saveUserAvatar(Long userId, MultipartFile avatarFile) {
         try {
             avatarService.saveUserAvatar(userId, avatarFile);
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "Avatar uploaded successfully.");
-            return ResponseEntity.ok(response);
+            return GenerateResponse.success("Avatar uploaded", null);
         } catch (AvatarUploadException e) {
-            Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("error", "Avatar upload failed.");
-            errorResponse.put("message", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
-        } catch (Exception e) {
-            Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("error", "An error occurred.");
-            errorResponse.put("message", "Failed to upload avatar.");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+            return GenerateResponse.badRequest("Error uploading avatar", e.getMessage());
         }
     }
 }

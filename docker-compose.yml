@@ -8,7 +8,7 @@ services:
       MONGO_INITDB_ROOT_USERNAME: rootuser
       MONGO_INITDB_ROOT_PASSWORD: rootpass
     volumes:
-      - ~/Volumes/mongodb_data:/data/db
+      - ~/mongodb_data:/data/db
     ports:
      - "27017:27017"
 
@@ -20,7 +20,7 @@ services:
       POSTGRES_PASSWORD: your_secure_password
       POSTRGRES_DB: your_database
     volumes:
-      - ~/Volumes/postgres_data:/var/lib/postgresql/data
+      - ~/postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
 

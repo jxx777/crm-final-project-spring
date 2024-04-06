@@ -17,19 +17,19 @@ public class AvatarServiceImpl implements AvatarService {
 
     @Override
     public void saveUserAvatar(Long userId, MultipartFile avatarFile) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new AvatarUploadException("User not found with ID: " + userId));
         try {
-            byte[] avatarBytes = avatarFile.getBytes();
-            user.setAvatar(avatarBytes);
+            user.setAvatar(avatarFile.getBytes());
             userRepository.save(user);
         } catch (IOException e) {
-            throw new AvatarUploadException("Error saving user avatar");
+            throw new AvatarUploadException("Error occurred while saving avatar.");
         }
     }
 
     @Override
     public byte[] getUserAvatar(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new AvatarUploadException("User not found with ID: " + userId));
         return user.getAvatar();
     }
 }

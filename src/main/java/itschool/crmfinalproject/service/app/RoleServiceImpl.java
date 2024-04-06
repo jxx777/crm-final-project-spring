@@ -28,7 +28,7 @@ public class RoleServiceImpl implements RoleService {
     public Collection<? extends GrantedAuthority> getEffectiveAuthorities(Set<Role> roles) {
         // Convert roles to authorities
         Set<GrantedAuthority> authorities = roles.stream()
-                .map(role -> new SimpleGrantedAuthority(role.getName().name()))
+                .map(role -> new SimpleGrantedAuthority(role.getRole().name()))
                 .collect(Collectors.toSet());
 
         // Resolve the effective authorities using the role hierarchy

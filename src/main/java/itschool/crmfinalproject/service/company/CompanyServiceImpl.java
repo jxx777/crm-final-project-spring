@@ -40,16 +40,6 @@ public class CompanyServiceImpl implements CompanyService {
     public CompanyDTO getFullCompanyById(Long companyId) {
         Company company = companyRepository.findById(companyId)
                 .orElseThrow(() -> new CompanyNotFoundException("Company not found with ID: " + companyId));
-
-        System.out.println("Company entity pre-mapping " + company);
-
-        // Add logging to check if contacts are present
-        if (company.getContacts() != null) {
-            System.out.println("Number of contacts: " + company.getContacts().size());
-        } else {
-            System.out.println("Contacts are null");
-        }
-
         return companyMapper.companyToCompanyDTO(company);
     }
 
@@ -65,7 +55,6 @@ public class CompanyServiceImpl implements CompanyService {
     public ResponseEntity<Page<CompanyBaseDTO>> getAllCompaniesPaged(Pageable pageable) {
         Page<Company> contactPage = companyRepository.findAll(pageable);
         Page<CompanyBaseDTO> contactDTOPage = contactPage.map(companyMapper::companyToCompanyBaseDTO);
-
         return ResponseEntity.ok(contactDTOPage);
     }
 
@@ -76,7 +65,6 @@ public class CompanyServiceImpl implements CompanyService {
         // Add the simplified contact to the company
         company.addContact(contact);
         companyRepository.save(company);
-
         return ResponseEntity.ok(company);
     }
 }
