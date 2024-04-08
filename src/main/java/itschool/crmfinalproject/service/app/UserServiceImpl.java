@@ -1,8 +1,8 @@
 package itschool.crmfinalproject.service.app;
 
 import itschool.crmfinalproject.entity.user.Role;
-import itschool.crmfinalproject.entity.user.RoleEnum;
 import itschool.crmfinalproject.entity.user.User;
+import itschool.crmfinalproject.enums.RoleEnum;
 import itschool.crmfinalproject.exceptions.AvatarUploadException;
 import itschool.crmfinalproject.exceptions.UserNotFoundException;
 import itschool.crmfinalproject.mapper.UserMapper;
@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -71,7 +72,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserDTO findById(Long userId) {
         return userRepository.findById(userId)
-                .map(userMapper::userToUserDto)
+                .map(userMapper::toUserDto)
                 .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
     }
 
@@ -79,13 +80,13 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserDTO findByUsername(String username) {
         return userRepository.findByUsername(username)
-                .map(userMapper::userToUserDto)
+                .map(userMapper::toUserDto)
                 .orElseThrow(() -> new UserNotFoundException("User not found with username: " + username));
     }
 
     public List<UserDTO> getAllUsers() {
         return userRepository.findAll().stream()
-            .map(userMapper::userToUserDto)
+            .map(userMapper::toUserDto)
             .toList();
     }
 
@@ -143,7 +144,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found with ID: " + userId));
         user.setEmail(newEmail);
         userRepository.save(user);
-        return userMapper.userToUserDto(user);
+        return userMapper.toUserDto(user);
     }
 
     @Override
@@ -151,14 +152,14 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found with id: " + userId));
         user.setUsername(newUsername);
         userRepository.save(user);
-        return userMapper.userToUserDto(user);
+        return userMapper.toUserDto(user);
     }
 
     public UserDTO updateUserRole(Long userId, RoleEnum roleEnum) {
         User user = userRepository.findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found with username: " + userId));
         Role role = roleRepository.findByRole(roleEnum).orElseThrow(() -> new IllegalStateException("Role not found."));
         user.setRole(role);
-        return userMapper.userToUserDto(user);
+        return userMapper.toUserDto(user);
     }
 
     @SneakyThrows

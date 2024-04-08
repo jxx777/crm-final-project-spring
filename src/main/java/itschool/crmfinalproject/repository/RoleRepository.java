@@ -2,7 +2,7 @@ package itschool.crmfinalproject.repository;
 
 
 import itschool.crmfinalproject.entity.user.Role;
-import itschool.crmfinalproject.entity.user.RoleEnum;
+import itschool.crmfinalproject.enums.RoleEnum;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

@@ -97,7 +97,7 @@ public class SecurityConfiguration {
     private void configureCors(HttpSecurity http) throws Exception {
         http.cors(cors -> cors.configurationSource(request -> {
             var corsConfig = new CorsConfiguration();
-            corsConfig.setAllowedOrigins(List.of("http://localhost:3000"));
+            corsConfig.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:1420"));
             corsConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
             corsConfig.setAllowedHeaders(List.of("*"));
             corsConfig.setAllowCredentials(true);
@@ -154,9 +154,8 @@ public class SecurityConfiguration {
      * Adds a custom JWT authentication filter before the default UsernamePasswordAuthenticationFilter.
      *
      * @param http The {@link HttpSecurity} to configure.
-     * @throws Exception if an error occurs during configuration.
      */
-    private void addCustomAuthenticationFilter(HttpSecurity http) throws Exception {
+    private void addCustomAuthenticationFilter(HttpSecurity http) {
         http.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
     }
 

@@ -3,8 +3,8 @@ package itschool.crmfinalproject.service.auth;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import itschool.crmfinalproject.configuration.auth.JwtUtil;
 import itschool.crmfinalproject.entity.user.Role;
-import itschool.crmfinalproject.entity.user.RoleEnum;
 import itschool.crmfinalproject.entity.user.User;
+import itschool.crmfinalproject.enums.RoleEnum;
 import itschool.crmfinalproject.mapper.RegisterUserMapper;
 import itschool.crmfinalproject.model.auth.RequestAuthenticationDTO;
 import itschool.crmfinalproject.model.auth.RequestRegistrationDTO;
@@ -50,7 +50,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             return GenerateResponse.badRequest("Username is already taken", null);
         }
 
-        User customUser = registerUserMapper.signupDtoToCustomUser(param);
+        User customUser = registerUserMapper.signUpToUser(param);
         customUser.setPassword(encoder.encode(param.password()));
 
         Role userRole = roleRepository.findByRole(RoleEnum.ADMIN).orElseThrow(() -> new RuntimeException("Error: Role is not found."));

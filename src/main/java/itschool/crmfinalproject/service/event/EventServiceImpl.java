@@ -3,15 +3,16 @@ package itschool.crmfinalproject.service.event;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import itschool.crmfinalproject.entity.app.Contact;
 import itschool.crmfinalproject.entity.app.event.Event;
-import itschool.crmfinalproject.entity.app.event.EventTypeEnum;
-import itschool.crmfinalproject.entity.app.event.PaymentMethodEnum;
-import itschool.crmfinalproject.entity.app.event.SubscriptionEnum;
+import itschool.crmfinalproject.entity.app.event.EventCategory;
+import itschool.crmfinalproject.enums.PaymentMethodEnum;
+import itschool.crmfinalproject.enums.SubscriptionEnum;
 import itschool.crmfinalproject.mapper.ContactMapper;
 import itschool.crmfinalproject.mapper.EventMapper;
 import itschool.crmfinalproject.model.contact.ContactBaseDTO;
 import itschool.crmfinalproject.model.event.EventDTO;
 import itschool.crmfinalproject.repository.ContactRepository;
 import itschool.crmfinalproject.repository.EventRepository;
+import itschool.crmfinalproject.repository.event.EventCategoryRepository;
 import itschool.crmfinalproject.service.comment.CommentService;
 import itschool.crmfinalproject.utility.GenerateResponse;
 import jakarta.persistence.EntityNotFoundException;
@@ -19,9 +20,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +31,7 @@ public class EventServiceImpl implements EventService {
 
     private final EventRepository eventRepository;
     private final ContactRepository contactRepository;
+    private final EventCategoryRepository eventCategoryRepository;
 
     private final CommentService commentService;
 
@@ -38,7 +41,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public List<EventDTO> findAllEvents() {
         return eventRepository.findAll().stream()
-                .map(eventMapper::eventToEventDto)
+                .map(eventMapper::toEventDTO)
                 .toList()
                 .reversed();
     }
@@ -46,34 +49,36 @@ public class EventServiceImpl implements EventService {
     @Override
     public List<EventDTO> findAllEventsForContact(Long contactId) {
         return eventRepository.findAll().stream()
-                .filter(event -> event.getContacts().stream()
+                .filter(event -> event.getParticipantContacts().stream()
                         .anyMatch(contact -> contact.id().equals(contactId)))
-                .map(eventMapper::eventToEventDto)
+                .map(eventMapper::toEventDTO)
                 .toList();
-    }
-
-    @Override
-    public void addEvent(EventDTO event) {
-        Event newEvent = eventMapper.eventDtoToEvent(event);
-        eventRepository.insert(newEvent);
     }
 
     public EventDTO findEventById(String eventId) {
         return eventRepository.findById(eventId)
-                .map(eventMapper::eventToEventDto)
+                .map(eventMapper::toEventDTO)
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
     @Override
-    public List<String> eventTypeOptions(String type) {
-        Map<String, List<String>> eventTypeOptions = new HashMap<>();
-        eventTypeOptions.put("call", Arrays.asList("Duration", "Caller ID", "Call Type", "Call Result"));
-        eventTypeOptions.put("acquisition", Arrays.asList("Amount", "Purchase Date", "Subscription", "Payment Method"));
-        eventTypeOptions.put("meeting", Arrays.asList("Meeting Date", "Location", "Participants", "Agenda"));
-        eventTypeOptions.put("cancellation", Arrays.asList("Reason", "Feedback", "Unsubscribe"));
-        // Extend event fields based on above format...
+    public void createEvent(EventDTO eventDTO) {
+        Event newEvent = eventMapper.toEvent(eventDTO);
+        eventRepository.insert(newEvent);
+    }
 
-        return eventTypeOptions.getOrDefault(type.toLowerCase(), List.of());
+    @Override
+    public EventDTO updateEvent(String eventId, EventDTO eventDTO) {
+        Optional<Event> optionalEvent = eventRepository.findById(eventId);
+        if (optionalEvent.isEmpty()) {
+            throw new EntityNotFoundException("Event with ID " + eventId + " not found");
+        }
+        Event existingEvent = optionalEvent.get();
+
+        eventMapper.updateEventFromDTO(eventDTO, existingEvent);
+
+        Event updatedEvent = eventRepository.save(existingEvent);
+        return eventMapper.toEventDTO(updatedEvent);
     }
 
     @Override
@@ -81,7 +86,7 @@ public class EventServiceImpl implements EventService {
         if (this.findEventById(eventId) != null) {
             commentService.findCommentsByEventId(eventId).forEach(comment -> {
                 if (comment != null) { // Ensure the comment is not null before proceeding
-                    commentService.deleteComment(comment.getId());
+                    commentService.deleteComment(comment.id());
                 }
             });
             eventRepository.deleteById(eventId);
@@ -97,18 +102,22 @@ public class EventServiceImpl implements EventService {
 
         Contact contact = contactRepository.findById(contactId).orElseThrow(() -> new EntityNotFoundException("Contact not found with ID: " + contactId));
 
-        ContactBaseDTO newContact = contactMapper.contactToContactBaseDto(contact);
-        event.getContacts().add(newContact);
+        ContactBaseDTO newContact = contactMapper.toContactBaseDTO(contact);
+        event.getParticipantContacts().add(newContact);
         eventRepository.save(event);
 
-        return eventMapper.eventToEventDto(event);
+        return eventMapper.toEventDTO(event);
     }
 
     @Override
-    public List<String> getAllEventTypes() {
-        return Arrays.stream(EventTypeEnum.values())
-                .map(Enum::toString)
-                .toList();
+    public Map<String, List<String>> getAllEventTypes() {
+        List<EventCategory> eventCategoryOptions = eventCategoryRepository.findAll();
+        return eventCategoryOptions.stream()
+                .collect(Collectors.toMap(
+                                EventCategory::getType,
+                                EventCategory::getOptions
+                        )
+                );
     }
 
     @Override

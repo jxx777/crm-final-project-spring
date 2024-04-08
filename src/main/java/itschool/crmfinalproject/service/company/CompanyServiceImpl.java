@@ -1,5 +1,6 @@
 package itschool.crmfinalproject.service.company;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import itschool.crmfinalproject.entity.app.Company;
 import itschool.crmfinalproject.entity.app.Contact;
 import itschool.crmfinalproject.exceptions.CompanyNotFoundException;
@@ -9,13 +10,17 @@ import itschool.crmfinalproject.model.company.CompanyBaseDTO;
 import itschool.crmfinalproject.model.company.CompanyDTO;
 import itschool.crmfinalproject.repository.CompanyRepository;
 import itschool.crmfinalproject.repository.ContactRepository;
+import itschool.crmfinalproject.utility.GenerateResponse;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -25,46 +30,54 @@ public class CompanyServiceImpl implements CompanyService {
     private final ContactRepository contactRepository;
 
     private final CompanyMapper companyMapper;
-    private final ContactMapper contactMapper;
 
     @Override
     public ResponseEntity<?> getCompanyById(Long companyId) {
         return companyRepository.findById(companyId)
-                .map(companyMapper::companyToCompanyBaseDTO)
+                .map(companyMapper::toCompanyBaseDTO)
                 .map(ResponseEntity::ok)
-                .orElseThrow(() -> new CompanyNotFoundException("Company not found with ID: " + companyId)
-        );
+                .orElseThrow(() -> new CompanyNotFoundException("Company not found with ID: " + companyId));
     }
 
     @Override
     public CompanyDTO getFullCompanyById(Long companyId) {
         Company company = companyRepository.findById(companyId)
                 .orElseThrow(() -> new CompanyNotFoundException("Company not found with ID: " + companyId));
-        return companyMapper.companyToCompanyDTO(company);
+        return companyMapper.toCompanyDTO(company);
     }
 
     @Override
     public List<CompanyBaseDTO> getAllCompanies() {
         return companyRepository.findAll()
                 .stream()
-                .map(companyMapper::companyToCompanyBaseDTO)
+                .map(companyMapper::toCompanyBaseDTO)
                 .toList();
     }
 
     @Override
     public ResponseEntity<Page<CompanyBaseDTO>> getAllCompaniesPaged(Pageable pageable) {
         Page<Company> contactPage = companyRepository.findAll(pageable);
-        Page<CompanyBaseDTO> contactDTOPage = contactPage.map(companyMapper::companyToCompanyBaseDTO);
+        Page<CompanyBaseDTO> contactDTOPage = contactPage.map(companyMapper::toCompanyBaseDTO);
         return ResponseEntity.ok(contactDTOPage);
     }
 
-    public ResponseEntity<?> addContactToCompany(Long companyId, Long contactId) {
-        Company company = companyRepository.findById(companyId).orElseThrow(() -> new CompanyNotFoundException("Company not found"));
-        Contact contact = contactRepository.findById(contactId).orElseThrow(() -> new CompanyNotFoundException("Contact not found"));
+    @Transactional
+    public void addContactToCompany(Long companyId, Long contactId) throws JsonProcessingException {
+        Company company = companyRepository.findById(companyId)
+                .orElseThrow(() -> new CompanyNotFoundException("Company not found"));
+        Contact contact = contactRepository.findById(contactId)
+                .orElseThrow(() -> new CompanyNotFoundException("Contact not found"));
 
-        // Add the simplified contact to the company
         company.addContact(contact);
         companyRepository.save(company);
-        return ResponseEntity.ok(company);
+
+        GenerateResponse.success("Contact added to the company", company);
+    }
+
+    @Transactional
+    public void deleteCompany(Long companyId) {
+        companyRepository.findById(companyId)
+                .orElseThrow(() -> new CompanyNotFoundException("Company not found with ID: " + companyId));
+        companyRepository.deleteById(companyId);
     }
 }

@@ -1,5 +1,6 @@
 package itschool.crmfinalproject.entity.user;
 
+import itschool.crmfinalproject.enums.RoleEnum;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

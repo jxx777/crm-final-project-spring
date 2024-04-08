@@ -1,7 +1,7 @@
 package itschool.crmfinalproject.startup;
 
 import itschool.crmfinalproject.entity.user.Role;
-import itschool.crmfinalproject.entity.user.RoleEnum;
+import itschool.crmfinalproject.enums.RoleEnum;
 import itschool.crmfinalproject.repository.RoleRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;

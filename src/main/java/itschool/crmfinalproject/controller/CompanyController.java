@@ -39,7 +39,7 @@ public class CompanyController {
     @ApiResponse(responseCode = "200", description = "Successfully retrieved detailed company information", content = @Content(schema = @Schema(implementation = CompanyDTO.class)))
     @ApiResponse(responseCode = "404", description = "Company not found")
     @GetMapping("/full/{companyId}")
-    public ResponseEntity<CompanyDTO> getFullCompany(@PathVariable @Parameter(description = "The unique identifier of the company to fetch details for") Long companyId) {
+    public ResponseEntity<CompanyDTO> getFullCompany(@PathVariable @Parameter(description = "The unique identifier of the company to fetch fieldDetails for") Long companyId) {
         CompanyDTO fullCompany = companyService.getFullCompanyById(companyId);
         return ResponseEntity.ok(fullCompany);
     }
@@ -59,13 +59,24 @@ public class CompanyController {
         return companyService.getAllCompaniesPaged(pageable);
     }
 
+
     @Operation(summary = "Add a contact to a company", description = "Associate a contact with a company.")
     @ApiResponse(responseCode = "201", description = "Contact added to the company successfully")
     @ApiResponse(responseCode = "404", description = "Company or contact not found")
     @PatchMapping("/add-contact/{companyId}/{contactId}")
-    public ResponseEntity<?> addContactToCompany(@PathVariable @Parameter(description = "The unique identifier of the company") Long companyId,
-                                                 @PathVariable @Parameter(description = "The unique identifier of the contact to add") Long contactId) throws JsonProcessingException {
+    public ResponseEntity<?> addContactToCompany(@PathVariable @Parameter(description = "Company id") Long companyId,
+                                                 @PathVariable @Parameter(description = "Contact id to add") Long contactId
+    ) throws JsonProcessingException {
         companyService.addContactToCompany(companyId, contactId);
         return GenerateResponse.created("Contact added!", null);
+    }
+
+    @Operation(summary = "Delete a company", description = "Deletes a company from the database")
+    @ApiResponse(responseCode = "201", description = "Company removed")
+    @ApiResponse(responseCode = "404", description = "Company not found")
+    @DeleteMapping("/delete/{companyId}")
+    public ResponseEntity<?> deleteCompany(@PathVariable @Parameter(description = "Company id") Long companyId) throws JsonProcessingException {
+        companyService.deleteCompany(companyId);
+        return GenerateResponse.success("Company removed!", null);
     }
 }

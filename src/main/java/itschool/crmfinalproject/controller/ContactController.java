@@ -29,60 +29,62 @@ public class ContactController {
 
     private final ContactService contactService;
 
-    @Operation(summary = "Get a contact by ID", description = "Retrieve a contact's details by their ID.")
-    @ApiResponse(responseCode = "200", description = "Successfully retrieved the contact", content = @Content(schema = @Schema(implementation = ContactDTO.class)))
-    @ApiResponse(responseCode = "404", description = "Contact not found")
+    @Operation(summary = "Get a contact by ID")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved the contact")
     @GetMapping("/{contactId}")
-    public ResponseEntity<?> getContact(@PathVariable @Parameter(description = "ID of the contact to retrieve") Long contactId) {
+    public ResponseEntity<?> getContact(@PathVariable @Parameter(description = "ID of the contact to retrieve", example = "1") Long contactId) {
         ContactDTO contact = contactService.getContactById(contactId);
         return ResponseEntity.ok(contact);
     }
 
-    @Operation(summary = "Get all contacts", description = "Retrieve a list of all contacts.")
-    @ApiResponse(responseCode = "200", description = "Successfully retrieved all contacts", content = @Content(schema = @Schema(implementation = List.class)))
+    @Operation(summary = "Get all contacts")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved all contacts")
     @GetMapping("/all")
     public ResponseEntity<?> getAllContacts() {
         List<ContactDTO> allContacts = contactService.getAllContacts();
         return ResponseEntity.ok(allContacts);
     }
 
-    @Operation(summary = "Get all contacts with pagination", description = "Retrieve a paginated list of all contacts.")
-    @ApiResponse(responseCode = "200", description = "Successfully retrieved all paginated contacts", content = @Content(schema = @Schema(implementation = Pageable.class)))
+    @Operation(summary = "Get all contacts with pagination")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved all paginated contacts")
     @GetMapping("/all/paged")
     public ResponseEntity<?> getAllContactsPaged(@Parameter(description = "Pagination configuration") Pageable pageable) {
         return contactService.getAllContactsPaged(pageable);
     }
 
-    @Operation(summary = "Delete a contact by ID", description = "Delete a contact based on their ID.")
+    @Operation(summary = "Delete a contact by ID")
     @ApiResponse(responseCode = "200", description = "Contact deleted successfully")
-    @ApiResponse(responseCode = "404", description = "Contact not found")
     @DeleteMapping("/{contactId}")
-    public ResponseEntity<String> deleteContact(@PathVariable @Parameter(description = "ID of the contact to delete") Long contactId) throws JsonProcessingException {
+    public ResponseEntity<String> deleteContact(@PathVariable @Parameter(description = "ID of the contact to delete", example = "2") Long contactId) throws JsonProcessingException {
         contactService.deleteContactById(contactId);
         return GenerateResponse.success("Contact deleted", null);
     }
 
-    @Operation(summary = "Delete all contacts", description = "Delete all contacts from the database.")
+    @Operation(summary = "Delete all contacts")
     @ApiResponse(responseCode = "200", description = "All contacts deleted successfully")
     @DeleteMapping("/all")
     public ResponseEntity<String> deleteAllContacts() throws JsonProcessingException {
         contactService.deleteAllContacts();
-        return GenerateResponse.success("Contacts deleted", null);
+        return GenerateResponse.success("All contacts deleted", null);
     }
 
-    @Operation(summary = "Add a new contact", description = "Create a new contact with the provided details.")
+    @Operation(summary = "Add a new contact")
     @ApiResponse(responseCode = "201", description = "Contact created successfully")
     @PostMapping
-    public ResponseEntity<String> addContact(@Valid @RequestBody(description = "New contact details") ContactBaseDTO newContact) throws JsonProcessingException {
+    public ResponseEntity<String> addContact(
+            @Valid @RequestBody(description = "New contact fieldDetails", content = @Content(schema = @Schema(implementation = ContactBaseDTO.class))) ContactBaseDTO newContact
+    ) throws JsonProcessingException {
         contactService.addContact(newContact);
         return GenerateResponse.created("Contact Created", newContact);
     }
 
-    @Operation(summary = "Update a contact", description = "Update the details of an existing contact.")
+    @Operation(summary = "Update a contact")
     @ApiResponse(responseCode = "200", description = "Contact updated successfully")
-    @ApiResponse(responseCode = "404", description = "Contact not found")
     @PatchMapping("/{contactId}")
-    public ResponseEntity<?> updateContact(@PathVariable @Parameter(description = "ID of the contact to update") Long contactId, @RequestBody(description = "Updated contact details") ContactBaseDTO contactDTO) {
-        return contactService.updateContact(contactId, contactDTO);
+    public ResponseEntity<?> updateContact(
+            @PathVariable @Parameter(description = "ID of the contact to update", example = "3") Long contactId,
+            @RequestBody(description = "Updated contact fieldDetails", content = @Content(schema = @Schema(implementation = ContactBaseDTO.class))) ContactBaseDTO contactToUpdateBaseDTO
+    ) {
+        return contactService.updateContact(contactId, contactToUpdateBaseDTO);
     }
 }

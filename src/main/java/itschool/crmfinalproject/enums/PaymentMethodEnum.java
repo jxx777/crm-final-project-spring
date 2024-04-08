@@ -1,4 +1,4 @@
-package itschool.crmfinalproject.entity.app.event;
+package itschool.crmfinalproject.enums;
 
 public enum PaymentMethodEnum {
     CREDIT_CARD,

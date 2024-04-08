@@ -1,92 +1,78 @@
 package itschool.crmfinalproject.service.event;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import itschool.crmfinalproject.entity.app.event.EventTypeEnum;
-import itschool.crmfinalproject.entity.app.event.SubscriptionEnum;
-import itschool.crmfinalproject.entity.app.event.PaymentMethodEnum;
 import itschool.crmfinalproject.model.event.EventDTO;
-import jakarta.persistence.EntityNotFoundException;
+
 
 import java.util.List;
+import java.util.Map;
 
 /**
- * Service interface for event-related operations.
+ * Service interface for managing event fields.
  */
 public interface EventService {
 
     /**
-     * Find all events.
+     * Finds all events.
      *
-     * @return a list of all events.
+     * @return a list of all event DTOs.
      */
     List<EventDTO> findAllEvents();
 
     /**
-     * Find all events for a specific contact.
+     * Finds events associated with a specific contact.
      *
      * @param contactId the ID of the contact.
-     * @return a list of {@link EventDTO}s associated with the contact.
+     * @return a list of event DTOs for the given contact.
      */
     List<EventDTO> findAllEventsForContact(Long contactId);
 
     /**
-     * Add a new event.
+     * Finds an event by its ID.
      *
-     * @param event the event to add.
-     */
-    void addEvent(EventDTO event);
-
-    /**
-     * Adds a contact to an event.
-     *
-     * @param eventId The ID of the event to which the contact will be added.
-     * @param contactId The ID of the contact to add to the event.
-     * @return The updated event with the new contact added.
-     * @throws EntityNotFoundException If the event or contact does not exist.
-     */
-    EventDTO addContactToEvent(String eventId, Long contactId);
-
-    /**
-     * Find an event by its ID.
-     *
-     * @param eventId the ID of the event.
-     * @return the found event.
+     * @param eventId the ID of the event to find.
+     * @return the event DTO if found.
      */
     EventDTO findEventById(String eventId);
 
     /**
-     * Get event options based on the event type.
+     * Creates a new event.
      *
-     * @param type the type of the event.
-     * @return a list of options for the event type.
+     * @param eventDTO the event data transfer object.
      */
-    List<String> eventTypeOptions(String type);
+    void createEvent(EventDTO eventDTO);
 
     /**
-     * Removes an event from the database.
+     * Updates an existing event.
      *
-     * @param eventId UUID of the event.
+     * @param eventId  the ID of the event to update.
+     * @param eventDTO the updated event data.
+     * @return the updated event DTO.
+     */
+    EventDTO updateEvent(String eventId, EventDTO eventDTO);
+
+    /**
+     * Deletes an event.
+     *
+     * @param eventId the ID of the event to delete.
      */
     void deleteEvent(String eventId) throws JsonProcessingException;
 
     /**
-     * Get event type.
+     * Adds a contact to an event.
      *
-     * @return a list of {@link EventTypeEnum}, should the event be of 'ACQUISITION'.
+     * @param eventId   the event ID.
+     * @param contactId the contact ID to add.
+     * @return the updated event DTO.
      */
-    List<String> getAllEventTypes();
+    EventDTO addContactToEvent(String eventId, Long contactId);
 
     /**
-     * Get payment method.
+     * Retrieves a map of all event types and their options.
      *
-     * @return a list of {@link PaymentMethodEnum}, should the event be of 'ACQUISITION'.
+     * @return a map with event types as keys and their options as values.
      */
+    Map<String, List<String>> getAllEventTypes();
     List<String> getAllPaymentMethods();
-
-    /**
-     * Get subscription package.
-     *
-     * @return a list of {@link SubscriptionEnum}, should the event be of 'ACQUISITION'.
-     */
     List<String> getAllSubscriptionTypes();
 }

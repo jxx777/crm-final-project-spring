@@ -1,10 +1,17 @@
 package itschool.crmfinalproject.service.contact;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import itschool.crmfinalproject.model.contact.ContactBaseDTO;
 import itschool.crmfinalproject.model.contact.ContactDTO;
+import itschool.crmfinalproject.utility.GenerateResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
@@ -60,4 +67,15 @@ public interface ContactService {
      * @param contactDTO The information of the contact to add.
      */
     void addContact(ContactBaseDTO contactDTO);
+
+//    @Operation(summary = "Remove a contact from company", description = "Associate a contact with a company.")
+//    @ApiResponse(responseCode = "201", description = "Contact removed from company successfully")
+//    @ApiResponse(responseCode = "404", description = "Company or contact not found")
+//    @PatchMapping("/removecompany/{companyId}/{contactId}")
+//    public ResponseEntity<?> removeContactFromCompany(@PathVariable @Parameter(description = "Company id") Long companyId,
+//                                                      @PathVariable @Parameter(description = "Contact id to remove") Long contactId
+//    ) throws JsonProcessingException {
+//        companyService.removeContactFromCompany(companyId, contactId);
+//        return GenerateResponse.success("Contact removed!", null);
+//    }
 }

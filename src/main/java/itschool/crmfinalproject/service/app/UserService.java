@@ -1,9 +1,10 @@
 package itschool.crmfinalproject.service.app;
 
-import itschool.crmfinalproject.entity.user.RoleEnum;
 import itschool.crmfinalproject.entity.user.User;
+import itschool.crmfinalproject.enums.RoleEnum;
 import itschool.crmfinalproject.model.user.UserDTO;
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -105,7 +106,7 @@ public interface UserService extends UserDetailsService {
     /**
      * Saves an avatar for a user.
      *
-     * @param userId      The ID of the user whose avatar is to be saved.
+     * @param userId     The ID of the user whose avatar is to be saved.
      * @param avatarFile The {@link MultipartFile} containing the avatar image.
      * @return A {@link ResponseEntity} indicating the result of the save operation.
      */

@@ -25,7 +25,7 @@ public class ContactServiceImpl implements ContactService {
     @Override
     public ContactDTO getContactById(Long contactId) {
         return contactRepository.findById(contactId)
-                .map(contactMapper::contactToContactDto)
+                .map(contactMapper::toContactDTO)
                 .orElseThrow(() -> new ContactNotFoundException("Contact with the provided ID does not exist")
         );
     }
@@ -47,28 +47,28 @@ public class ContactServiceImpl implements ContactService {
     @Override
     @Transactional
     public void addContact(ContactBaseDTO contactDTO) {
-        Contact newContact = contactMapper.contactBaseDtoToContact(contactDTO);
+        Contact newContact = contactMapper.baseToContact(contactDTO);
         contactRepository.save(newContact);
     }
 
     @Override
     public List<ContactDTO> getAllContacts() {
         return contactRepository.findAll().stream()
-                .map(contactMapper::contactToContactDto)
+                .map(contactMapper::toContactDTO)
                 .toList();
     }
 
     @Override
     public ResponseEntity<Page<ContactDTO>> getAllContactsPaged(Pageable pageable) {
         Page<Contact> contactPage = contactRepository.findAll(pageable);
-        Page<ContactDTO> contactDTOPage = contactPage.map(contactMapper::contactToContactDto);
+        Page<ContactDTO> contactDTOPage = contactPage.map(contactMapper::toContactDTO);
         return ResponseEntity.ok(contactDTOPage);
     }
 
     @Override
     public ResponseEntity<?> updateContact(Long contactId, ContactBaseDTO contactDTO) {
         return contactRepository.findById(contactId).map(contact -> {
-            contactMapper.updateContactFromBaseContactDto(contact, contactDTO);
+            contactMapper.updateBaseContactDTO(contact, contactDTO);
             Contact updatedContact = contactRepository.save(contact);
             return ResponseEntity.ok(updatedContact);
         }).orElseGet(() -> ResponseEntity.notFound().build());

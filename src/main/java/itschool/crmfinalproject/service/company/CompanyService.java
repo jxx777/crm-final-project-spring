@@ -1,5 +1,6 @@
 package itschool.crmfinalproject.service.company;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import itschool.crmfinalproject.model.company.CompanyBaseDTO;
 import itschool.crmfinalproject.model.company.CompanyDTO;
 import org.springframework.data.domain.Pageable;
@@ -48,7 +49,13 @@ public interface CompanyService {
      *
      * @param companyId The ID of the company to which the contact will be added.
      * @param contactId The ID of the contact to be added to the company.
-     * @return A {@link ResponseEntity} after adding the contact to the company.
      */
-    ResponseEntity<?> addContactToCompany(Long companyId, Long contactId);
+    void addContactToCompany(Long companyId, Long contactId) throws JsonProcessingException;
+
+    /**
+     * Removes company from the database.
+     *
+     * @param companyId The ID of the company.
+     */
+    void deleteCompany(Long companyId);
 }

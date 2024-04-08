@@ -87,7 +87,7 @@ public class ExportServiceImpl implements ExportService {
 
     private ResponseEntity<byte[]> exportUsersToCsv() {
         List<UserDTO> exportedUsers = userRepository.findAll().stream()
-                .map(userMapper::userToUserDto)
+                .map(userMapper::toUserDto)
                 .toList();
 
         byte[] csvBytes = exportListToCsv(exportedUsers,
@@ -103,7 +103,7 @@ public class ExportServiceImpl implements ExportService {
 
     private ResponseEntity<byte[]> exportContactsToCsv() {
         List<ContactDTO> exportedContacts = contactRepository.findAll().stream()
-                .map(contactMapper::contactToContactDto)
+                .map(contactMapper::toContactDTO)
                 .toList();
 
         byte[] csvBytes = exportListToCsv(exportedContacts,
@@ -121,7 +121,7 @@ public class ExportServiceImpl implements ExportService {
 
     private ResponseEntity<byte[]> exportCompaniesToCsv() {
         List<CompanyDTO> exportedCompanies = companyRepository.findAll().stream()
-                .map(companyMapper::companyToCompanyDTO)
+                .map(companyMapper::toCompanyDTO)
                 .toList();
 
         byte[] csvBytes = exportListToCsv(exportedCompanies,

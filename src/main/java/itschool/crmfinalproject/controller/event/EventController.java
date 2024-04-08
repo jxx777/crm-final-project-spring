@@ -1,17 +1,21 @@
-package itschool.crmfinalproject.controller;
+package itschool.crmfinalproject.controller.event;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import itschool.crmfinalproject.model.event.EventDTO;
+import itschool.crmfinalproject.service.event.EventCategoryService;
 import itschool.crmfinalproject.service.event.EventService;
+import itschool.crmfinalproject.utility.GenerateResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -19,43 +23,65 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Tag(name = "Event Service", description = "Handles event-related functionalities, supporting event lifecycle management and queries.")
 public class EventController {
+
     private final EventService eventService;
+    private final EventCategoryService eventCategoryService;
 
     @Operation(summary = "Get all event types", description = "Retrieve a list of all event types.")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved event types")
     @GetMapping("/types")
-    public ResponseEntity<List<String>> getAllEventTypes() {
-        return ResponseEntity.ok(eventService.getAllEventTypes());
+    public ResponseEntity<?> getAllEventTypes() {
+        Map<String, List<String>> allEventTypes = eventService.getAllEventTypes();
+        return ResponseEntity.ok(allEventTypes);
     }
 
     @Operation(summary = "Get all payment methods", description = "Retrieve a list of all payment methods.")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved payment methods")
     @GetMapping("/payment-methods")
-    public ResponseEntity<List<String>> getAllPaymentMethods() {
-        return ResponseEntity.ok(eventService.getAllPaymentMethods());
+    public ResponseEntity<?> getAllPaymentMethods() {
+        List<String> allPaymentMethods = eventService.getAllPaymentMethods();
+        return ResponseEntity.ok(allPaymentMethods);
     }
 
     @Operation(summary = "Get all subscriptions types", description = "Retrieve a list of all subscription packages.")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved subscription types")
     @GetMapping("/subscriptions")
-    public ResponseEntity<List<String>> getAllSubscriptionTypes() {
-        return ResponseEntity.ok(eventService.getAllSubscriptionTypes());
+    public ResponseEntity<?> getAllSubscriptionTypes() {
+        List<String> allSubscriptionTypes = eventService.getAllSubscriptionTypes();
+        return ResponseEntity.ok(allSubscriptionTypes);
     }
 
-    @Operation(summary = "Get event options", description = "Retrieve a list of options based on the event type.")
+    @Operation(summary = "Get event options", description = "Retrieve a list of options based on the event category.")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved event options")
     @GetMapping("/options/{type}")
-    public ResponseEntity<List<String>> getEventOptions(@PathVariable @Parameter(description = "Event type to retrieve options for") String type) {
-        List<String> eventTypeOptions = eventService.eventTypeOptions(type);
-        return ResponseEntity.ok(eventTypeOptions);
+    public ResponseEntity<List<String>> getEventOptions(@PathVariable String type) {
+        List<String> eventCategoryOptions = eventCategoryService.getEventCategoryOptions(type);
+        return ResponseEntity.ok(eventCategoryOptions);
     }
 
     @Operation(summary = "Create an event", description = "Create a new event.")
     @ApiResponse(responseCode = "200", description = "Successfully created an event")
     @PostMapping("/create")
-    public ResponseEntity<?> createEvent(@RequestBody @Parameter(description = "Event data to create") EventDTO eventDto) {
-        eventService.addEvent(eventDto);
-        return ResponseEntity.ok(eventDto);
+    public ResponseEntity<?> createEvent(@RequestBody @Parameter(description = "Event data to create") EventDTO eventDto) throws JsonProcessingException {
+        eventService.createEvent(eventDto);
+        return GenerateResponse.created("Event created", null);
+    }
+
+    @Operation(summary = "Update event")
+    @PatchMapping("/update/{eventId}")
+    ResponseEntity<?> updateEvent(@PathVariable String eventId, @RequestBody EventDTO eventDTO) throws JsonProcessingException {
+       EventDTO updatedEvent = eventService.updateEvent(eventId, eventDTO);
+       return GenerateResponse.success("Event updated", updatedEvent);
+    }
+
+    @SneakyThrows
+    @Operation(summary = "Delete event", description = "Remove an event from the database.")
+    @ApiResponse(responseCode = "200", description = "Successfully deleted the event")
+    @ApiResponse(responseCode = "404", description = "Event not found")
+    @DeleteMapping("/{eventId}")
+    public ResponseEntity<?> deleteEvent(@PathVariable @Parameter(description = "Event ID to delete") String eventId) {
+        eventService.deleteEvent(eventId);
+        return ResponseEntity.ok().body("Event deleted");
     }
 
     @Operation(summary = "Get all events", description = "Retrieve a list of all events.")
@@ -92,15 +118,5 @@ public class EventController {
     ) {
         EventDTO eventWithAddedContact = eventService.addContactToEvent(eventId, contactId);
         return ResponseEntity.ok(eventWithAddedContact);
-    }
-
-    @SneakyThrows
-    @Operation(summary = "Delete event", description = "Remove an event from the database.")
-    @ApiResponse(responseCode = "200", description = "Successfully deleted the event")
-    @ApiResponse(responseCode = "404", description = "Event not found")
-    @DeleteMapping("/{eventId}")
-    public ResponseEntity<?> deleteEvent(@PathVariable @Parameter(description = "Event ID to delete") String eventId) {
-        eventService.deleteEvent(eventId);
-        return ResponseEntity.ok().body("Event deleted");
     }
 }

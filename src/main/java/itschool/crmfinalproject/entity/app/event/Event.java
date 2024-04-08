@@ -25,11 +25,11 @@ public class Event {
 
     private String description;
 
-    private EventTypeEnum eventType;
+    private String eventCategory;
 
-    private Map<String, Object> details = new HashMap<>();
+    private Map<String, Object> fieldDetails = new HashMap<>();
 
     private Set<String> commentIds = new HashSet<>();
 
-    private Set<ContactBaseDTO> contacts = new HashSet<>();
+    private Set<ContactBaseDTO> participantContacts = new HashSet<>();
 }

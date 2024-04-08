@@ -8,13 +8,13 @@ import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface ContactMapper {
-    ContactDTO contactToContactDto(Contact contact);
+    ContactDTO toContactDTO(Contact contact);
 
-    Contact contactDtoToContact(ContactDTO contactDTO);
+    Contact toContact(ContactDTO contactDTO);
 
-    ContactBaseDTO contactToContactBaseDto(Contact contact);
+    ContactBaseDTO toContactBaseDTO(Contact contact);
 
-    Contact contactBaseDtoToContact(ContactBaseDTO contactBaseDTO);
+    Contact baseToContact(ContactBaseDTO contactBaseDTO);
 
-    void updateContactFromBaseContactDto(@MappingTarget Contact contact, ContactBaseDTO contactDTO);
+    void updateBaseContactDTO(@MappingTarget Contact contact, ContactBaseDTO contactDTO);
 }

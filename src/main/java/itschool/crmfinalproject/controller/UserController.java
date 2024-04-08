@@ -32,16 +32,16 @@ public class UserController {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
-    @Operation(summary = "Get user by ID", description = "Retrieve details of a specific user by their ID.")
-    @ApiResponse(responseCode = "200", description = "Successfully retrieved user details", content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserDTO.class)))
+    @Operation(summary = "Get user by ID", description = "Retrieve fieldDetails of a specific user by their ID.")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved user fieldDetails", content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserDTO.class)))
     @ApiResponse(responseCode = "404", description = "User not found")
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> getUserById(@PathVariable Long id) {
         return ResponseEntity.ok(userService.findById(id));
     }
 
-    @Operation(summary = "Get user by username", description = "Retrieve details of a user by their username.")
-    @ApiResponse(responseCode = "200", description = "Successfully retrieved user details", content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserDTO.class)))
+    @Operation(summary = "Get user by username", description = "Retrieve fieldDetails of a user by their username.")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved user fieldDetails", content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserDTO.class)))
     @ApiResponse(responseCode = "404", description = "User not found")
     @GetMapping("/username/{username}")
     public ResponseEntity<UserDTO> getUserByUsername(@PathVariable String username) {

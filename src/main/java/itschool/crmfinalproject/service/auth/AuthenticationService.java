@@ -20,9 +20,9 @@ public interface AuthenticationService {
     ResponseEntity<String> accessAccount(RequestAuthenticationDTO requestAuthenticationDTO) throws JsonProcessingException;
 
     /**
-     * Register a new user with the given registration details.
+     * Register a new user with the given registration fieldDetails.
      *
-     * @param requestRegistrationDTO the user registration details
+     * @param requestRegistrationDTO the user registration fieldDetails
      * @return a response entity indicating the outcome of the registration process
      * @throws JsonProcessingException if there is a processing error
      */

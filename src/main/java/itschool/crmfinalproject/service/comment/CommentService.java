@@ -1,6 +1,8 @@
 package itschool.crmfinalproject.service.comment;
 
-import itschool.crmfinalproject.entity.app.event.Comment;
+import itschool.crmfinalproject.model.comment.CommentBaseDTO;
+import itschool.crmfinalproject.model.comment.CommentDTO;
+
 import java.util.List;
 
 /**
@@ -13,7 +15,8 @@ public interface CommentService {
      *
      * @return a list of all comments
      */
-    List<Comment> findAllComments();
+    List<CommentDTO> findAllComments();
+
 
     /**
      * Find comments made by a specific author.
@@ -21,7 +24,7 @@ public interface CommentService {
      * @param author the author's name
      * @return a list of comments made by the specified author
      */
-    List<Comment> findCommentsByAuthor(String author);
+    List<CommentDTO> findCommentsByAuthor(String author);
 
     /**
      * Find comments associated with a specific event.
@@ -29,58 +32,55 @@ public interface CommentService {
      * @param eventId the ID of the event
      * @return a list of comments associated with the specified event
      */
-    List<Comment> findCommentsByEventId(String eventId);
+    List<CommentDTO> findCommentsByEventId(String eventId);
 
     /**
      * Post a new comment for an event.
      *
      * @param eventId the ID of the event to comment on
-     * @param author the author of the comment
-     * @param text the comment text
-     * @param attachments a list of attachment identifiers
+     * @param commentDetails: new comment fieldDetails
      * @return the newly created comment
      */
-    Comment postComment(String eventId, String author, String text, List<String> attachments);
-
+    CommentDTO addComment(String eventId, CommentBaseDTO commentDetails);
     /**
      * Add a reply to an existing comment.
      *
      * @param parentId the ID of the comment being replied to
-     * @param reply the reply comment details
+     * @param replyDetails the reply comment fieldDetails
      * @return the newly created reply comment
      */
-    Comment addReply(String parentId, Comment reply);
+    CommentDTO replyToComment(String parentId, CommentBaseDTO replyDetails);
 
     /**
      * Add a like to a comment.
      *
      * @param commentId the ID of the comment to like
-     * @param userId the ID of the user liking the comment
+     * @param userId    the ID of the user liking the comment
      * @return the updated comment with the new like
      */
-    Comment addLike(String commentId, String userId);
+    CommentDTO addLike(String commentId, String userId);
 
     /**
      * Remove a like from a comment.
      *
      * @param commentId the ID of the comment to unlike
-     * @param userId the ID of the user unliking the comment
+     * @param userId    the ID of the user unliking the comment
      * @return the updated comment with the like removed
      */
-    Comment removeLike(String commentId, String userId);
+    CommentDTO removeLike(String commentId, String userId);
 
     /**
      * Delete a specific comment by its ID.
      *
-     * @param id the ID of the comment to delete
+     * @param commentId the ID of the comment to delete
      */
-    void deleteComment(String id);
+    void deleteComment(String commentId);
 
     /**
      * Retrieve a comment by its ID.
      *
-     * @param id the ID of the comment to retrieve
+     * @param commentId the ID of the comment to retrieve
      * @return the requested comment
      */
-    Comment getCommentById(String id);
+    CommentDTO findCommentById(String commentId);
 }

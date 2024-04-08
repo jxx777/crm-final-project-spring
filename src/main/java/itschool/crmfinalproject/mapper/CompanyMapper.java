@@ -8,12 +8,12 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring", uses = ContactMapper.class)
 public interface CompanyMapper {
-    CompanyBaseDTO companyToCompanyBaseDTO(Company company);
+    CompanyBaseDTO toCompanyBaseDTO(Company company);
 
-    Company companyDtoBaseToCompany(CompanyBaseDTO companyDTO);
+    Company toCompany(CompanyBaseDTO companyDTO);
 
     @Mapping(target = "contacts", source = "contacts")
-    CompanyDTO companyToCompanyDTO(Company company);
+    CompanyDTO toCompanyDTO(Company company);
 
-    Company companyDtoToCompany(CompanyDTO companyDTO);
+    Company toCompany(CompanyDTO companyDTO);
 }

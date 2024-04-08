@@ -7,7 +7,7 @@ import itschool.crmfinalproject.entity.app.Contact;
 import itschool.crmfinalproject.entity.app.Sector;
 import itschool.crmfinalproject.repository.CompanyRepository;
 import itschool.crmfinalproject.repository.ContactRepository;
-import itschool.crmfinalproject.repository.SectorRepository;
+import itschool.crmfinalproject.repository.event.SectorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -35,18 +35,18 @@ public class SQLSeeder implements CommandLineRunner {
     @Transactional
     public void run(String... args) {
         if (sectorRepository.count() == 0 && companyRepository.count() == 0 && contactRepository.count() == 0) {
-            IntStream.range(0, 5).forEach(i -> {
+            IntStream.range(0, 15).forEach(i -> {
                 Sector sector = createUniqueSector();
                 sectorRepository.save(sector);
 
                 // Vary the number of companies per sector
-                int companiesInSector = random.nextInt(1, 11); // 1 to 10 companies
+                int companiesInSector = random.nextInt(1, 5); // 1 to 5 companies
                 IntStream.range(0, companiesInSector).forEach(j -> {
                     Company company = createUniqueCompany(sector);
                     companyRepository.save(company);
 
                     // Vary the number of contacts per company
-                    int contactsInCompany = random.nextInt(1, 21); // 1 to 20 contacts
+                    int contactsInCompany = random.nextInt(1, 10); // 1 to 10 contacts
                     IntStream.range(0, contactsInCompany).forEach(k -> {
                         Contact contact = createUniqueContact(company);
                         contactRepository.save(contact);

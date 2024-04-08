@@ -56,8 +56,8 @@ public class JwtUtil {
     /**
      * Validates a token's integrity and checks if it is intended for the specified user.
      *
-     * @param token        the JWT to be validated
-     * @param userDetails  the user details against which the token will be validated
+     * @param token       the JWT to be validated
+     * @param userDetails the user fieldDetails against which the token will be validated
      * @return true if the token is valid and false otherwise
      */
     public Boolean validateToken(String token, UserDetails userDetails) {
