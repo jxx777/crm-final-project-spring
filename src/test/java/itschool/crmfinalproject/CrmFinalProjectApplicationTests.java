@@ -1,7 +1,7 @@
-package ro.itschool.crmfinalproject;
+package itschool.crmfinalproject;
 
-import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.Test;
 
 @SpringBootTest
 class CrmFinalProjectApplicationTests {
@@ -9,5 +9,4 @@ class CrmFinalProjectApplicationTests {
     @Test
     void contextLoads() {
     }
-
 }

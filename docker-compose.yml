@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: crm-final-project-container
+    container_name: crm-final-spring
     depends_on:
       - mongodb
       - postgres
@@ -14,35 +14,44 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/your_database
       SPRING_DATASOURCE_USERNAME: your_username
-      SPRING_DATASOURCE_PASSWORD: your_secure_password
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
       SPRING_DATA_MONGODB_URI: mongodb://rootuser:rootpass@mongodb:27017/admin
     volumes:
-      - ./target:/app
-      - ./src:/src
-    command: mvn spring-boot:run
+      - .:/app
+    working_dir: /app
+    networks:
+      - spring-net
 
   mongodb:
-    image: mongo:latest
+    image: mongo:4.4 # Use a specific version instead of latest for better control
     container_name: mongodb-dev
     environment:
       MONGO_INITDB_ROOT_USERNAME: rootuser
-      MONGO_INITDB_ROOT_PASSWORD: rootpass
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
     volumes:
-      - ~/mongodb_data:/data/db
+      - mongodb_data:/data/db
     ports:
       - "27017:27017"
+    networks:
+      - spring-net
 
   postgres:
-    image: postgres:latest
-    container_name: postgres_container-dev
+    image: postgres:13 # Use a specific version instead of latest for better control
+    container_name: postgres-dev
     environment:
       POSTGRES_USER: your_username
-      POSTGRES_PASSWORD: your_secure_password
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: your_database
     volumes:
-      - ~/postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    networks:
+      - spring-net
+
+networks:
+  spring-net:
+    driver: bridge
 
 volumes:
   mongodb_data:
