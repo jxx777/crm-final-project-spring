@@ -1,4 +1,4 @@
-package itschool.crmfinalproject.service.export;
+package itschool.crmfinalproject.service.data.export;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

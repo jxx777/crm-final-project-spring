@@ -16,7 +16,7 @@ public class SpringSecurityAuditorAware implements AuditorAware<String> {
     /**
      * Obtains the current auditor (authenticated user) from the Spring Security context.
      *
-     * @return An Optional containing the username of the authenticated user, or a default value
+     * @return An {@link Optional} containing the username of the authenticated user, or a default value
      * for system or anonymous actions.
      */
     @Override

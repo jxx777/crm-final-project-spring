@@ -1,7 +1,7 @@
 package itschool.crmfinalproject.utility;
 
 import itschool.crmfinalproject.exceptions.*;
-import itschool.crmfinalproject.model.Response;
+import itschool.crmfinalproject.model.ResponseModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -16,7 +16,7 @@ import java.util.Objects;
 public class GlobalExceptionHandlerAdvice {
 
     private ResponseEntity<Object> createResponseEntity(HttpStatus status, String errorMessage, String error) {
-        Response response = new Response(
+        ResponseModel response = new ResponseModel(
                 status.value(),
                 status.name(),
                 errorMessage,

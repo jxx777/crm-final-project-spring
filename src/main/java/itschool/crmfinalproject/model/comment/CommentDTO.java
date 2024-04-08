@@ -16,6 +16,5 @@ public record CommentDTO(
         @Schema(description = "A set of user IDs who liked the comment.") Set<String> likes,
         @Schema(description = "A list of attachment URLs for the comment.") List<String> attachments,
         @Schema(description = "The ID of the parent comment, null if it's a top-level comment.", example = "null or 6602fc2bb6332a392f0deac4") String parentId,
-        @Schema(description = "A list of replies to this comment.") List<CommentDTO> replies
-) {
+        @Schema(description = "A list of replies to this comment.") List<CommentDTO> replies) {
 }

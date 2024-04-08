@@ -3,7 +3,7 @@ package itschool.crmfinalproject.utility;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import itschool.crmfinalproject.model.Response;
+import itschool.crmfinalproject.model.ResponseModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -11,7 +11,7 @@ public class GenerateResponse {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
     private static ResponseEntity<String> createResponse(String message, Object data, HttpStatus status) throws JsonProcessingException {
-        Response response = new Response(
+        ResponseModel response = new ResponseModel(
                 status.value(),
                 status.name(),
                 message,

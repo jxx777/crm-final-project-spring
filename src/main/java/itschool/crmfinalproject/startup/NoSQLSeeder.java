@@ -35,7 +35,7 @@ public class NoSQLSeeder implements CommandLineRunner {
         if (eventRepository.count() == 0) {
             List<Event> events = IntStream.range(0, 50)
                     .mapToObj(i -> createEvent())
-                    .collect(Collectors.toList());
+                    .toList();
             eventRepository.saveAll(events);
             events.forEach(this::createAndSaveCommentsForEvent);
         }
@@ -46,9 +46,11 @@ public class NoSQLSeeder implements CommandLineRunner {
                 new EventCategory("call", Arrays.asList("Duration", "Caller ID", "Call Type", "Call Result")),
                 new EventCategory("acquisition", Arrays.asList("Amount", "Purchase Date", "Subscription", "Payment Method")),
                 new EventCategory("meeting", Arrays.asList("Meeting Date", "Location", "Participants", "Agenda")),
-                new EventCategory("cancellation", Arrays.asList("Reason", "Feedback", "Unsubscribe"))
+                new EventCategory("cancellation", Arrays.asList("Reason", "Feedback", "Unsubscribe")),
+                new EventCategory("webinar", Arrays.asList("Webinar Date", "Topic", "Host", "Attendees")),
+                new EventCategory("product launch", Arrays.asList("Launch Date", "Product Name", "Features", "Target Audience")),
+                new EventCategory("networking", Arrays.asList("Event Date", "Venue", "Attendees", "Purpose"))
         );
-
         eventCategoryRepository.saveAll(eventCategoryOptionsList);
     }
 
@@ -66,8 +68,8 @@ public class NoSQLSeeder implements CommandLineRunner {
     }
 
     private String getRandomEventType() {
-        List<String> eventCategorys = List.of("call", "acquisition", "meeting", "cancellation");
-        return eventCategorys.get(random.nextInt(eventCategorys.size()));
+        List<String> eventCategories = List.of("call", "acquisition", "meeting", "cancellation");
+        return eventCategories.get(random.nextInt(eventCategories.size()));
     }
 
     private Map<String, Object> generateEventDetails(String eventCategory) {
@@ -79,7 +81,8 @@ public class NoSQLSeeder implements CommandLineRunner {
     }
 
     private void createAndSaveCommentsForEvent(Event event) {
-        int numberOfComments = random.nextInt(1, 5);
+        // Use a skewed distribution: most events have a moderate number of comments, but a few have many.
+        int numberOfComments = (random.nextBoolean()) ? random.nextInt(1, 5) : random.nextInt(5, 15);
         List<Comment> comments = IntStream.range(0, numberOfComments)
                 .mapToObj(i -> createComment(event.getId()))
                 .collect(Collectors.toList());
@@ -99,6 +102,6 @@ public class NoSQLSeeder implements CommandLineRunner {
     private List<String> generateAttachments() {
         return IntStream.range(0, random.nextInt(1, 4))
                 .mapToObj(i -> faker.file().fileName())
-                .collect(Collectors.toList());
+                .toList();
     }
 }

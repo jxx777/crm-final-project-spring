@@ -76,8 +76,18 @@ public class SQLSeeder implements CommandLineRunner {
             company.setSector(sector);
             company.setCreatedBy("seeder");
         } while (!usedCompanyNames.add(company.getName()));
+
+        companyRepository.save(company); // Save the company first
+
+        int numberOfContacts = (random.nextBoolean()) ? random.nextInt(5, 15) : random.nextInt(15, 50);
+        IntStream.range(0, numberOfContacts).forEach(i -> {
+            Contact contact = createUniqueContact(company);
+            contactRepository.save(contact); // Now it's safe to save the contact
+        });
+
         return company;
     }
+
 
     private Contact createUniqueContact(Company company) {
         Contact contact = new Contact();
@@ -94,8 +104,10 @@ public class SQLSeeder implements CommandLineRunner {
             contact.setCreatedAt(LocalDateTime.now().minusDays(random.nextInt(30)));
             contact.setCreatedBy("seeder");
         } while (contactRepository.findByEmail(contact.getEmail()).isPresent());
+        contact.setCompany(company); // Set the saved company
         return contact;
     }
+
 
     // Generate a set of sales-related tags
     // Consider updating generateSalesTags() for more variation
@@ -105,6 +117,7 @@ public class SQLSeeder implements CommandLineRunner {
         // Select a random subset of tags, ensuring at least one tag is selected
         return new HashSet<>(salesTags.subList(0, random.nextInt(1, Math.min(5, salesTags.size()))));
     }
+
     private Address createAddress() {
         Address address = new Address();
         address.setStreet(faker.address().streetAddress());
