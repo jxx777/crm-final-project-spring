@@ -51,13 +51,10 @@ public class UserServiceImpl implements UserService {
         return user.orElse(null);
     }
 
-    public String userId(String username) {
+    public String getIdByUsername(String username) {
         Optional<User> userOptional = userRepository.findByUsername(username);
-        return userOptional.map(
-                user -> user.getId()
-                        .toString())
-                .orElseThrow(() -> new UserNotFoundException("User not found: " + username)
-                );
+        return userOptional.map(user -> user.getId().toString())
+                .orElseThrow(() -> new UserNotFoundException("User not found: " + username));
     }
 
     public void activateUser(final User user) {

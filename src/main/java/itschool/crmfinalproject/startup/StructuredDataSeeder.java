@@ -19,7 +19,7 @@ import java.util.stream.IntStream;
 
 @Component
 @RequiredArgsConstructor
-public class SQLSeeder implements CommandLineRunner {
+public class StructuredDataSeeder implements CommandLineRunner {
 
     private final CompanyRepository companyRepository;
     private final ContactRepository contactRepository;
@@ -34,19 +34,17 @@ public class SQLSeeder implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) {
-        if (sectorRepository.count() == 0 && companyRepository.count() == 0 && contactRepository.count() == 0) {
+        if (sectorRepository.count() == 0) {
             IntStream.range(0, 15).forEach(i -> {
                 Sector sector = createUniqueSector();
                 sectorRepository.save(sector);
 
-                // Vary the number of companies per sector
-                int companiesInSector = random.nextInt(1, 5); // 1 to 5 companies
+                int companiesInSector = random.nextInt(1, 5);
                 IntStream.range(0, companiesInSector).forEach(j -> {
                     Company company = createUniqueCompany(sector);
                     companyRepository.save(company);
 
-                    // Vary the number of contacts per company
-                    int contactsInCompany = random.nextInt(1, 10); // 1 to 10 contacts
+                    int contactsInCompany = random.nextInt(1, 10);
                     IntStream.range(0, contactsInCompany).forEach(k -> {
                         Contact contact = createUniqueContact(company);
                         contactRepository.save(contact);
@@ -61,7 +59,6 @@ public class SQLSeeder implements CommandLineRunner {
         do {
             sector.setSectorName(faker.commerce().department());
             sector.setMarketCap(faker.number().randomDouble(2, 10000, 50000));
-            sector.setCreatedBy("seeder");
         } while (!usedSectorNames.add(sector.getSectorName()));
         return sector;
     }
@@ -71,23 +68,12 @@ public class SQLSeeder implements CommandLineRunner {
         do {
             company.setName(faker.company().name());
             company.setEvaluation(faker.number().randomDouble(2, 10000, 100000));
-            company.setIncomeFromCompany(faker.number().randomDouble(2, 10000, 100000));
+            company.setIncomeFromCompany(faker.number().randomDouble(2, 5000, 20000)); // Adding income attribute
             company.setAddress(createAddress());
             company.setSector(sector);
-            company.setCreatedBy("seeder");
         } while (!usedCompanyNames.add(company.getName()));
-
-        companyRepository.save(company); // Save the company first
-
-        int numberOfContacts = (random.nextBoolean()) ? random.nextInt(5, 15) : random.nextInt(15, 50);
-        IntStream.range(0, numberOfContacts).forEach(i -> {
-            Contact contact = createUniqueContact(company);
-            contactRepository.save(contact); // Now it's safe to save the contact
-        });
-
         return company;
     }
-
 
     private Contact createUniqueContact(Company company) {
         Contact contact = new Contact();
@@ -102,36 +88,25 @@ public class SQLSeeder implements CommandLineRunner {
             contact.setAddress(createAddress());
             contact.setCompany(company);
             contact.setCreatedAt(LocalDateTime.now().minusDays(random.nextInt(30)));
-            contact.setCreatedBy("seeder");
-        } while (contactRepository.findByEmail(contact.getEmail()).isPresent());
-        contact.setCompany(company); // Set the saved company
+        } while (!usedEmails.add(contact.getEmail()));
         return contact;
     }
 
-
-    // Generate a set of sales-related tags
-    // Consider updating generateSalesTags() for more variation
     private Set<String> generateSalesTags() {
-        List<String> salesTags = new ArrayList<>(List.of("Lead", "Prospect", "Converted", "Hot", "Cold", "Follow-Up", "In-Negotiation", "Long-Term", "High-Value", "New", "Urgent", "Low-Priority", "High-Priority", "Consultation"));
-        Collections.shuffle(salesTags);
-        // Select a random subset of tags, ensuring at least one tag is selected
-        return new HashSet<>(salesTags.subList(0, random.nextInt(1, Math.min(5, salesTags.size()))));
+        List<String> tags = new ArrayList<>(List.of("Lead", "Prospect", "Converted", "Hot", "Cold"));
+        Collections.shuffle(tags);
+        return new HashSet<>(tags.subList(0, random.nextInt(1, tags.size())));
     }
 
     private Address createAddress() {
-        Address address = new Address();
-        address.setStreet(faker.address().streetAddress());
-        address.setCity(faker.address().city());
-        address.setState(faker.address().state());
-        address.setCountry(faker.address().country());
-        return address;
+        return new Address(faker.address().streetAddress(), faker.address().city(), faker.address().state(), faker.address().country());
     }
 
     private String getUniqueEmail() {
         String email;
         do {
             email = faker.internet().emailAddress();
-        } while (!usedEmails.add(email));
+        } while (usedEmails.contains(email));
         return email;
     }
 }

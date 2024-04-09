@@ -1,16 +1,21 @@
 package itschool.crmfinalproject.service.data;
-
 import itschool.crmfinalproject.entity.app.Company;
 import itschool.crmfinalproject.entity.app.Contact;
+import itschool.crmfinalproject.entity.app.Sector;
 import itschool.crmfinalproject.entity.app.event.Event;
-import itschool.crmfinalproject.model.analysis.IncomeEventParticipationDataDTO;
+import itschool.crmfinalproject.mapper.ContactMapper;
+import itschool.crmfinalproject.model.analysis.*;
 import itschool.crmfinalproject.model.contact.ContactBaseDTO;
 import itschool.crmfinalproject.repository.ContactRepository;
 import itschool.crmfinalproject.repository.EventRepository;
+import itschool.crmfinalproject.repository.event.SectorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,24 +24,31 @@ public class DataAggregationServiceImpl implements DataAggregationService {
 
     private final EventRepository eventRepository;
     private final ContactRepository contactRepository;
+    private final SectorRepository sectorRepository;
+    private final ContactMapper contactMapper;
 
-//    @Override
-//    public AggregatedDataDTO getAggregatedData() {
-//        List<Event> events = eventRepository.findAll();
-//        List<Contact> contacts = contactRepository.findAll();
-//
-//        // Now, you can aggregate data from both sources
-//        // For illustration, let's just count items from both sources
-//        AggregatedDataDTO aggregatedData = new AggregatedDataDTO();
-//        aggregatedData.setTotalEvents(events.size());
-//        aggregatedData.setTotalContacts(contacts.size());
-//
-//        // Additional complex aggregation logic can be implemented here
-//        // For example, correlating event participation with company income
-//
-//        return aggregatedData;
-//    }
+    @Override
+    public AggregatedDataDTO getAggregatedData() {
+        List<Event> events = eventRepository.findAll();
+        List<Contact> contacts = contactRepository.findAll();
 
+        double totalIncome = events.stream()
+                .mapToDouble(Event::getIncome)
+                .sum();
+
+        double avgContactsPerEvent = events.stream()
+                .filter(event -> event.getParticipantContacts() != null)
+                .mapToInt(event -> event.getParticipantContacts().size())
+                .average()
+                .orElse(0.0);
+
+        return new AggregatedDataDTO(
+            events.size(),
+            contacts.size(),
+            totalIncome,
+            avgContactsPerEvent
+        );
+    }
 
     @Override
     public List<IncomeEventParticipationDataDTO> getIncomeEventParticipationData() {
@@ -47,8 +59,7 @@ public class DataAggregationServiceImpl implements DataAggregationService {
             Set<String> participatingCompanies = new HashSet<>();
             Set<Contact> participantContacts = event.getParticipantContacts().stream()
                     .map(this::findContactByDTO)
-                    .filter(Optional::isPresent)
-                    .map(Optional::get)
+                    .filter(Objects::nonNull)
                     .collect(Collectors.toSet());
 
             double totalIncome = participantContacts.stream()
@@ -66,7 +77,67 @@ public class DataAggregationServiceImpl implements DataAggregationService {
         }).toList();
     }
 
-    private Optional<Contact> findContactByDTO(ContactBaseDTO dto) {
-        return contactRepository.findById(dto.id());
+    private Contact findContactByDTO(ContactBaseDTO contactBaseDTO) {
+        return contactRepository.findById(contactBaseDTO.id()).orElse(null);
+    }
+
+    @Override
+    public List<EventParticipationDetailDTO> getEventParticipationDetails() {
+        // Iterate over events and for each event, identify participant companies
+        return eventRepository.findAll().stream()
+                .map(event -> new EventParticipationDetailDTO(
+                        event.getId(),
+                        event.getTitle(),
+                        event.getTime(),
+                        event.getParticipantContacts().size(),
+                        event.getIncome()))
+                .toList();
+    }
+
+    @Override
+    public List<SectorRevenueDTO> getSectorRevenueByEventIncome() {
+        // Map each sector to its total revenue derived from events
+        return sectorRepository.findAll().stream()
+                .map(sector -> {
+                    double totalRevenue = calculateTotalRevenueForSector(sector);
+                    return new SectorRevenueDTO(sector.getSectorName(), totalRevenue);
+                })
+                .toList();
+    }
+
+    private double calculateTotalRevenueForSector(Sector sector) {
+        // For each company in a sector, calculate income from associated events
+        return sector.getCompanies().stream()
+                .flatMapToDouble(company -> findEventsByCompany(company).stream().mapToDouble(Event::getIncome))
+                .sum();
+    }
+
+    private List<Event> findEventsByCompany(Company company) {
+        // Find events where any of the company's contacts are participants
+        return eventRepository.findAll().stream()
+                .filter(event -> event.getParticipantContacts().stream().anyMatch(contactBaseDTO ->
+                        company.getContacts().stream().anyMatch(contact ->
+                                contact.getId().equals(contactBaseDTO.id())
+                        ))).toList();
+    }
+
+    @Override
+    public List<CrossDatabaseCommentAnalysisDTO> getCrossDatabaseCommentAnalysis() {
+        // Analyze comments across events and contacts
+        return contactRepository.findAll().stream()
+                .map(contact -> new CrossDatabaseCommentAnalysisDTO(
+                        contact.getId().toString(),
+                        contact.getFirstName() + " " + contact.getLastName(),
+                        countCommentsForContact(contact)
+                ))
+                .toList();
+    }
+
+    private long countCommentsForContact(Contact contact) {
+        // Count comments in events where the contact is a participant
+        return eventRepository.findAll().stream()
+                .filter(event -> event.getParticipantContacts().contains(contactMapper.toContactBaseDTO(contact)))
+                .flatMapToLong(event -> event.getCommentIds().stream().mapToLong(id -> 1))
+                .sum();
     }
 }

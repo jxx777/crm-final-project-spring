@@ -1,4 +1,12 @@
 package itschool.crmfinalproject.model.stats;
 
-public record ContactsPerCompanyDTO(String companyName, Long contactCount) {
+import io.swagger.v3.oas.annotations.media.Schema;
+
+/**
+ * DTO representing the number of contacts associated with each company.
+ */
+public record ContactsPerCompanyDTO(
+        @Schema(description = "Name of the company") String companyName,
+        @Schema(description = "Count of contacts associated with the company") Long contactCount
+) {
 }

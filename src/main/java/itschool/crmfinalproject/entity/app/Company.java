@@ -15,7 +15,6 @@ import java.util.Set;
 @Table(name = "companies")
 public class Company extends BaseEntity {
 
-    // Getters and Setters
     @Column(name = "company_name", unique = true, nullable = false)
     private String name;
 

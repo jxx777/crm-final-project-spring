@@ -27,6 +27,8 @@ public class Event {
 
     private String eventCategory;
 
+    private double income;
+
     private Map<String, Object> fieldDetails = new HashMap<>();
 
     private Set<String> commentIds = new HashSet<>();

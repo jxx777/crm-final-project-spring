@@ -1,14 +1,18 @@
 package itschool.crmfinalproject.model.company;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import itschool.crmfinalproject.model.contact.ContactBaseDTO;
 
 import java.util.List;
 
+/**
+ * Detailed Data Transfer Object representing a company, including associated contacts.
+ */
 public record CompanyDTO(
-        Long id,
-        String name,
-        Double evaluation,
-        Double incomeFromCompany,
-        List<ContactBaseDTO> contacts
+        @Schema(description = "Unique identifier of the company") Long id,
+        @Schema(description = "Name of the company") String name,
+        @Schema(description = "Evaluation metric of the company, possibly representing market value or an internal assessment") Double evaluation,
+        @Schema(description = "Total income generated from the company") Double incomeFromCompany,
+        @Schema(description = "List of contacts associated with the company, represented as ContactBaseDTOs") List<ContactBaseDTO> contacts
 ) {
 }

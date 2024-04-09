@@ -5,7 +5,6 @@ import itschool.crmfinalproject.entity.app.Company;
 import itschool.crmfinalproject.entity.app.Contact;
 import itschool.crmfinalproject.exceptions.CompanyNotFoundException;
 import itschool.crmfinalproject.mapper.CompanyMapper;
-import itschool.crmfinalproject.mapper.ContactMapper;
 import itschool.crmfinalproject.model.company.CompanyBaseDTO;
 import itschool.crmfinalproject.model.company.CompanyDTO;
 import itschool.crmfinalproject.repository.CompanyRepository;
@@ -18,9 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -31,11 +28,10 @@ public class CompanyServiceImpl implements CompanyService {
 
     private final CompanyMapper companyMapper;
 
+
     @Override
     public ResponseEntity<?> getCompanyById(Long companyId) {
-        return companyRepository.findById(companyId)
-                .map(companyMapper::toCompanyBaseDTO)
-                .map(ResponseEntity::ok)
+        return companyRepository.findById(companyId).map(companyMapper::toCompanyBaseDTO).map(ResponseEntity::ok)
                 .orElseThrow(() -> new CompanyNotFoundException("Company not found with ID: " + companyId));
     }
 
@@ -48,10 +44,7 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Override
     public List<CompanyBaseDTO> getAllCompanies() {
-        return companyRepository.findAll()
-                .stream()
-                .map(companyMapper::toCompanyBaseDTO)
-                .toList();
+        return companyRepository.findAll().stream().map(companyMapper::toCompanyBaseDTO).toList();
     }
 
     @Override
@@ -63,10 +56,8 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Transactional
     public void addContactToCompany(Long companyId, Long contactId) throws JsonProcessingException {
-        Company company = companyRepository.findById(companyId)
-                .orElseThrow(() -> new CompanyNotFoundException("Company not found"));
-        Contact contact = contactRepository.findById(contactId)
-                .orElseThrow(() -> new CompanyNotFoundException("Contact not found"));
+        Company company = companyRepository.findById(companyId).orElseThrow(() -> new CompanyNotFoundException("Company not found"));
+        Contact contact = contactRepository.findById(contactId).orElseThrow(() -> new CompanyNotFoundException("Contact not found"));
 
         company.addContact(contact);
         companyRepository.save(company);
@@ -76,8 +67,7 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Transactional
     public void deleteCompany(Long companyId) {
-        companyRepository.findById(companyId)
-                .orElseThrow(() -> new CompanyNotFoundException("Company not found with ID: " + companyId));
+        companyRepository.findById(companyId).orElseThrow(() -> new CompanyNotFoundException("Company not found with ID: " + companyId));
         companyRepository.deleteById(companyId);
     }
 }

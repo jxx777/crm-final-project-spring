@@ -3,7 +3,7 @@ package itschool.crmfinalproject.model.contact;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 public record ContactBaseDTO(
-        @Schema(description = "The ID of the contact", example = "1") Long id,
+        @Schema(description = "The ID of the contact", example = "") Long id,
         @Schema(description = "The email address of the contact", example = "john.doe@example.com") String email,
         @Schema(description = "The first name of the contact", example = "John") String firstName,
         @Schema(description = "The last name of the contact", example = "Doe") String lastName,

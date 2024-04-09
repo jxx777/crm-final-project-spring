@@ -1,5 +1,6 @@
 package itschool.crmfinalproject.configuration;
 
+import jakarta.validation.constraints.NotNull;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.core.Authentication;
@@ -20,7 +21,7 @@ public class SpringSecurityAuditorAware implements AuditorAware<String> {
      * for system or anonymous actions.
      */
     @Override
-    public Optional<String> getCurrentAuditor() {
+    public @NotNull Optional<String> getCurrentAuditor() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
             return Optional.of("System");  // System or scheduled task

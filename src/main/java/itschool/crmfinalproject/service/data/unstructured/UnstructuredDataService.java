@@ -1,11 +1,11 @@
-package itschool.crmfinalproject.service.data.nosqldata;
+package itschool.crmfinalproject.service.data.unstructured;
 
 
 import itschool.crmfinalproject.model.analysis.*;
 
 import java.util.List;
 
-public interface NoSqlDataService {
+public interface UnstructuredDataService {
 
     List<CategoryCommentsCountDTO> countCommentsPerEventCategory();
 

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface SqlDataRepository extends JpaRepository<Contact, Long> {
+public interface StructuredDataRepository extends JpaRepository<Contact, Long> {
 
     @Query("""
     SELECT new itschool.crmfinalproject.model.stats.ContactsPerCompanyDTO(co.name, COUNT(c))

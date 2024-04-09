@@ -35,7 +35,8 @@ services:
       - "27017:27017"
 
   postgres:
-    image: postgres:latest
+#    image: postgres:latest
+    image: postgis/postgis
     container_name: postgres_container-dev
     environment:
       POSTGRES_USER: your_username

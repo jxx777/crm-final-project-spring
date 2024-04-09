@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;
 
-public interface NoSqlDataRepository extends MongoRepository<Comment, String> {
+public interface UnstructuredDataRepository extends MongoRepository<Comment, String> {
 
     // Count of Comments Per Event Category
     @Aggregation(pipeline = {

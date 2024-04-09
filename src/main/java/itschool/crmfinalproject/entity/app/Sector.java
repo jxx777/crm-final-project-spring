@@ -2,6 +2,9 @@ package itschool.crmfinalproject.entity.app;
 
 import itschool.crmfinalproject.entity.BaseEntity;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,13 +17,33 @@ import java.util.Set;
 @Table(name = "sectors")
 public class Sector extends BaseEntity {
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
+    @Size(max = 255)
+    @NotBlank
     private String sectorName;
 
+    @Column(nullable = false)
+    @NotNull
     private Double marketCap;
 
     @OneToMany(mappedBy = "sector", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Company> companies = new HashSet<>();
+
+    @Column
+    private Double growthRate;
+
+    @Column(length = 1024)
+    private String description;
+
+    @Column(name= "averageReturnOnInvestment")
+    private Double averageReturnOnInvestment;
+
+    @Column
+    private Integer averageCompanySize;
+
+    @Column
+    private Integer totalNumberOfEmployees;
+
 
     public void addCompany(Company company) {
         companies.add(company);

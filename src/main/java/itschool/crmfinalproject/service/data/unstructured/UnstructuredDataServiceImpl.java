@@ -1,6 +1,7 @@
-package itschool.crmfinalproject.service.data.nosqldata;
+package itschool.crmfinalproject.service.data.unstructured;
+
 import itschool.crmfinalproject.model.analysis.*;
-import itschool.crmfinalproject.repository.NoSqlDataRepository;
+import itschool.crmfinalproject.repository.UnstructuredDataRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -8,32 +9,32 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class NoSqlDataServiceImpl implements NoSqlDataService {
+public class UnstructuredDataServiceImpl implements UnstructuredDataService {
 
-    private final NoSqlDataRepository noSqlDataRepository;
+    private final UnstructuredDataRepository unstructuredDataRepository;
 
     @Override
     public List<CategoryCommentsCountDTO> countCommentsPerEventCategory() {
-        return noSqlDataRepository.countCommentsPerEventCategory();
+        return unstructuredDataRepository.countCommentsPerEventCategory();
     }
 
     @Override
     public List<UserCommentsCountDTO> findTopActiveUsers() {
-        return noSqlDataRepository.findTopActiveUsers();
+        return unstructuredDataRepository.findTopActiveUsers();
     }
 
     @Override
     public List<EventPopularityDTO> findEventPopularityOverTime() {
-        return noSqlDataRepository.findEventPopularityOverTime();
+        return unstructuredDataRepository.findEventPopularityOverTime();
     }
 
     @Override
     public List<CommentEngagementDTO> analyzeCommentEngagement() {
-        return noSqlDataRepository.analyzeCommentEngagement();
+        return unstructuredDataRepository.analyzeCommentEngagement();
     }
 
     @Override
     public List<CommentLengthDistributionDTO> analyzeCommentLengthDistribution() {
-        return noSqlDataRepository.analyzeCommentLengthDistribution();
+        return unstructuredDataRepository.analyzeCommentLengthDistribution();
     }
 }

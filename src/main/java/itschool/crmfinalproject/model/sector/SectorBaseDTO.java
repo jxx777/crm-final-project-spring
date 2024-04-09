@@ -1,7 +1,12 @@
 package itschool.crmfinalproject.model.sector;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+/**
+ * DTO representing the basic information about a business or industry sector.
+ */
 public record SectorBaseDTO(
-        Long id,
-        String sectorName
+        @Schema(description = "Unique identifier of the sector") Long id,
+        @Schema(description = "Name of the sector") String sectorName
 ) {
 }

@@ -1,7 +1,7 @@
-package itschool.crmfinalproject.service.data.sqldata;
+package itschool.crmfinalproject.service.data.structured;
 
 import itschool.crmfinalproject.model.stats.*;
-import itschool.crmfinalproject.repository.SqlDataRepository;
+import itschool.crmfinalproject.repository.StructuredDataRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -9,42 +9,42 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class SqlDataServiceImpl implements SqlDataService {
+public class StructuredDataServiceImpl implements StructuredDataService {
 
-    private final SqlDataRepository sqlDataRepository;
+    private final StructuredDataRepository structuredDataRepository;
 
     @Override
     public List<ContactsPerCompanyDTO> countContactsPerCompany() {
-        return sqlDataRepository.countContactsPerCompany();
+        return structuredDataRepository.countContactsPerCompany();
     }
 
     @Override
     public List<CompaniesPerSectorDTO> countCompaniesPerSector() {
-        return sqlDataRepository.countCompaniesPerSector();
+        return structuredDataRepository.countCompaniesPerSector();
     }
 
     @Override
     public List<TopTagsDTO> findTopTagsUsed() {
-        return sqlDataRepository.findTopTagsUsed();
+        return structuredDataRepository.findTopTagsUsed();
     }
 
     @Override
     public List<AvgCompanyEvaluationPerSectorDTO> avgCompanyEvaluationPerSector() {
-        return sqlDataRepository.avgCompanyEvaluationPerSector();
+        return structuredDataRepository.avgCompanyEvaluationPerSector();
     }
 
     @Override
     public List<TotalIncomePerSectorDTO> totalIncomePerSector() {
-        return sqlDataRepository.totalIncomePerSector();
+        return structuredDataRepository.totalIncomePerSector();
     }
 
     @Override
     public List<CompaniesAboveEvaluationThresholdDTO> countCompaniesAboveEvaluationThreshold(Double evaluationThreshold) {
-        return sqlDataRepository.countCompaniesAboveEvaluationThreshold(evaluationThreshold);
+        return structuredDataRepository.countCompaniesAboveEvaluationThreshold(evaluationThreshold);
     }
 
     @Override
     public List<TopSectorsByCompanyCountDTO> getTopSectorsByCompanyCount() {
-        return sqlDataRepository.getTopSectorsByCompanyCount();
+        return structuredDataRepository.getTopSectorsByCompanyCount();
     }
 }

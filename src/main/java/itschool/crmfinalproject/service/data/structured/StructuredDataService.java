@@ -1,4 +1,4 @@
-package itschool.crmfinalproject.service.data.sqldata;
+package itschool.crmfinalproject.service.data.structured;
 
 import itschool.crmfinalproject.model.stats.*;
 import org.springframework.stereotype.Repository;
@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface SqlDataService {
+public interface StructuredDataService {
 
     List<ContactsPerCompanyDTO> countContactsPerCompany();
 

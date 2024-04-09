@@ -101,7 +101,7 @@ public interface UserService extends UserDetailsService {
      * @param username The username of the user whose ID is to be retrieved.
      * @return A string representing the user's ID.
      */
-    String userId(String username);
+    String getIdByUsername(String username);
 
     /**
      * Saves an avatar for a user.
