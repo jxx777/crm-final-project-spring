@@ -1,8 +1,8 @@
 package itschool.crmfinalproject.startup;
 
-import itschool.crmfinalproject.entity.user.Role;
-import itschool.crmfinalproject.enums.RoleEnum;
-import itschool.crmfinalproject.repository.RoleRepository;
+import itschool.crmfinalproject.users.entity.Role;
+import itschool.crmfinalproject.users.enums.RoleEnum;
+import itschool.crmfinalproject.users.repository.RoleRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

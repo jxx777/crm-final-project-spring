@@ -1,12 +1,12 @@
 package itschool.crmfinalproject.startup;
 
 import com.github.javafaker.Faker;
-import itschool.crmfinalproject.entity.app.event.Comment;
-import itschool.crmfinalproject.entity.app.event.Event;
-import itschool.crmfinalproject.entity.app.event.EventCategory;
-import itschool.crmfinalproject.repository.CommentRepository;
-import itschool.crmfinalproject.repository.EventRepository;
-import itschool.crmfinalproject.repository.event.EventCategoryRepository;
+import itschool.crmfinalproject.comments.document.Comment;
+import itschool.crmfinalproject.events.document.Event;
+import itschool.crmfinalproject.events.document.EventCategory;
+import itschool.crmfinalproject.comments.repository.CommentRepository;
+import itschool.crmfinalproject.events.repository.EventRepository;
+import itschool.crmfinalproject.events.repository.EventCategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -41,7 +41,14 @@ public class UnstructuredDataSeeder implements CommandLineRunner {
     private void seedEventTypeOptions() {
         List<EventCategory> eventCategoryOptionsList = Arrays.asList(
                 // Define various event categories with relevant details
-                new EventCategory("call", Arrays.asList("Duration", "Caller ID", "Call Type", "Call Result")), new EventCategory("acquisition", Arrays.asList("Amount", "Purchase Date", "Subscription", "Payment Method")), new EventCategory("meeting", Arrays.asList("Meeting Date", "Location", "Participants", "Agenda")), new EventCategory("cancellation", Arrays.asList("Reason", "Feedback", "Unsubscribe")), new EventCategory("webinar", Arrays.asList("Webinar Date", "Topic", "Host", "Attendees")), new EventCategory("product launch", Arrays.asList("Launch Date", "Product Name", "Features", "Target Audience")), new EventCategory("networking", Arrays.asList("Event Date", "Venue", "Attendees", "Purpose")));
+                new EventCategory("call", Arrays.asList("Duration", "Caller ID", "Call Type", "Call Result")),
+                new EventCategory("acquisition", Arrays.asList("Amount", "Purchase Date", "Subscription", "Payment Method")),
+                new EventCategory("meeting", Arrays.asList("Meeting Date", "Location", "Participants", "Agenda")),
+                new EventCategory("cancellation", Arrays.asList("Reason", "Feedback", "Unsubscribe")),
+                new EventCategory("webinar", Arrays.asList("Webinar Date", "Topic", "Host", "Attendees")),
+                new EventCategory("product launch", Arrays.asList("Launch Date", "Product Name", "Features", "Target Audience")),
+                new EventCategory("networking", Arrays.asList("Event Date", "Venue", "Attendees", "Purpose"))
+        );
         eventCategoryRepository.saveAll(eventCategoryOptionsList);
     }
 

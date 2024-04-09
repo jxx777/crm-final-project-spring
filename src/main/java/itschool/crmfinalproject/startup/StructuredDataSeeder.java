@@ -1,13 +1,13 @@
 package itschool.crmfinalproject.startup;
 
 import com.github.javafaker.Faker;
-import itschool.crmfinalproject.entity.app.Address;
-import itschool.crmfinalproject.entity.app.Company;
-import itschool.crmfinalproject.entity.app.Contact;
-import itschool.crmfinalproject.entity.app.Sector;
-import itschool.crmfinalproject.repository.CompanyRepository;
-import itschool.crmfinalproject.repository.ContactRepository;
-import itschool.crmfinalproject.repository.event.SectorRepository;
+import itschool.crmfinalproject.common.entity.Address;
+import itschool.crmfinalproject.companies.entity.Company;
+import itschool.crmfinalproject.contacts.entity.Contact;
+import itschool.crmfinalproject.sectors.entity.Sector;
+import itschool.crmfinalproject.companies.repository.CompanyRepository;
+import itschool.crmfinalproject.contacts.repository.ContactRepository;
+import itschool.crmfinalproject.sectors.entity.repository.SectorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;

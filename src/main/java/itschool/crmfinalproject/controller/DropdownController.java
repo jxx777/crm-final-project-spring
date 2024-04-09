@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import itschool.crmfinalproject.entity.FormData;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,7 +43,10 @@ public class DropdownController {
     @ApiResponse(responseCode = "200", description = "Form data submitted successfully")
     @PostMapping("/submitForm")
     public ResponseEntity<String> handleFormSubmission(@RequestBody FormData formData) {
-        System.out.println("Received: " + formData.getName() + ", " + formData.getType() + ", " + formData.getMaterial());
+        System.out.println("Received: " + formData.name() + ", " + formData.type() + ", " + formData.material());
         return ResponseEntity.ok("Form data submitted successfully");
+    }
+
+    public record FormData(String name, String type, String material) {
     }
 }
