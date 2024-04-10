@@ -41,7 +41,6 @@ public class SecurityConfiguration {
             "/configuration/security",
             "/swagger-ui.html",
             "/webjars/**",
-            "/filtered/**",
             "/**",
     };
 
@@ -97,7 +96,7 @@ public class SecurityConfiguration {
     private void configureCors(HttpSecurity http) throws Exception {
         http.cors(cors -> cors.configurationSource(request -> {
             var corsConfig = new CorsConfiguration();
-            corsConfig.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:1420"));
+            corsConfig.setAllowedOrigins(List.of("http://localhost:3000"));
             corsConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
             corsConfig.setAllowedHeaders(List.of("*"));
             corsConfig.setAllowCredentials(true);
@@ -126,7 +125,7 @@ public class SecurityConfiguration {
     @Bean
     public RoleHierarchy roleHierarchy() {
         RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
-        String hierarchy = "ROLE_ADMIN > ROLE_EMPLOYEE and ROLE_EMPLOYEE > ROLE_USER";
+        String hierarchy = "ADMIN > EMPLOYEE and EMPLOYEE > USER";
         roleHierarchy.setHierarchy(hierarchy);
         return roleHierarchy;
     }

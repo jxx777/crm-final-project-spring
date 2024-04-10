@@ -1,6 +1,6 @@
 package itschool.crmfinalproject.statistics.repository;
 
-import itschool.crmfinalproject.analysis.model.*;
+import itschool.crmfinalproject.data.model.*;
 import itschool.crmfinalproject.comments.document.Comment;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;

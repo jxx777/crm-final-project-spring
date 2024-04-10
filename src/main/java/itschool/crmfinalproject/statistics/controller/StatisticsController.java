@@ -3,7 +3,7 @@ package itschool.crmfinalproject.statistics.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import itschool.crmfinalproject.analysis.model.*;
+import itschool.crmfinalproject.data.model.*;
 import itschool.crmfinalproject.statistics.model.*;
 import itschool.crmfinalproject.statistics.service.structured.StructuredDataService;
 import itschool.crmfinalproject.statistics.service.unstructured.UnstructuredDataService;

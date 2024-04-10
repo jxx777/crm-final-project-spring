@@ -1,4 +1,4 @@
-package itschool.crmfinalproject.analysis.model;
+package itschool.crmfinalproject.data.model;
 
 /**
  * Represents a data point that indicates a percentage value for a specific category.

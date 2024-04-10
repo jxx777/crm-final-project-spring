@@ -1,4 +1,4 @@
-package itschool.crmfinalproject.analysis.model;
+package itschool.crmfinalproject.data.model;
 
 import java.time.LocalDateTime;
 

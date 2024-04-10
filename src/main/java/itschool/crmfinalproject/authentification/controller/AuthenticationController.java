@@ -41,11 +41,11 @@ public class AuthenticationController {
         }
     }
 
-    @Operation(summary = "Sign in", description = "Endpoint for user authentication. Returns access and refresh tokens.")
+    @Operation(summary = "Log in", description = "Endpoint for user authentication. Returns access and refresh tokens.")
     @ApiResponse(responseCode = "200", description = "Authentication successful")
     @ApiResponse(responseCode = "401", description = "Authentication failed")
-    @PostMapping("/signin")
-    public ResponseEntity<?> signIn(@RequestBody RequestAuthenticationDTO requestAuthenticationDTO) {
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody RequestAuthenticationDTO requestAuthenticationDTO) {
         try {
             ResponseEntity<?> authResponse = authenticationService.accessAccount(requestAuthenticationDTO);
             if (!authResponse.getStatusCode().is2xxSuccessful()) {
@@ -62,11 +62,11 @@ public class AuthenticationController {
         }
     }
 
-    @Operation(summary = "Refresh the access token", description = "Endpoint to refresh the access token using a refresh token.")
-    @ApiResponse(responseCode = "200", description = "Token refreshed successfully")
-    @ApiResponse(responseCode = "401", description = "Invalid refresh token")
+    @Operation(summary = "Refresh the access token", description = "Endpoint to refresh the access token using a refresh token. The request should contain the refresh token.")
+    @ApiResponse(responseCode = "200", description = "Token refreshed successfully. Returns the new access token.")
+    @ApiResponse(responseCode = "401", description = "Invalid refresh token. The refresh token provided is not valid or expired.")
     @PostMapping("/refresh")
-    public ResponseEntity<?> refresh(@RequestBody Map<String, String> tokenRequest) {
+    public ResponseEntity<?> refresh(@RequestBody @Parameter(description = "A JSON object containing the refresh token. Example: {\"refreshToken\": \"<your_refresh_token_here>\"}") Map<String, String> tokenRequest) {
         String refreshToken = tokenRequest.get("refreshToken");
         if (!jwtUtil.validateRefreshToken(refreshToken)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token");

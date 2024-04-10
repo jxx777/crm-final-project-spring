@@ -1,6 +1,6 @@
-package itschool.crmfinalproject.analysis.service;
+package itschool.crmfinalproject.data.service;
 
-import itschool.crmfinalproject.analysis.model.*;
+import itschool.crmfinalproject.data.model.*;
 
 import java.util.List;
 

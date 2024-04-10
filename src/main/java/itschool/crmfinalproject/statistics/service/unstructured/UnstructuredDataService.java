@@ -1,6 +1,6 @@
 package itschool.crmfinalproject.statistics.service.unstructured;
 
-import itschool.crmfinalproject.analysis.model.*;
+import itschool.crmfinalproject.data.model.*;
 
 import java.util.List;
 

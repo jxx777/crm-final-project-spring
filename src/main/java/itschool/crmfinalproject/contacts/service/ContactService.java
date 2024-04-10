@@ -2,6 +2,7 @@ package itschool.crmfinalproject.contacts.service;
 
 import itschool.crmfinalproject.contacts.model.ContactBaseDTO;
 import itschool.crmfinalproject.contacts.model.ContactDTO;
+import itschool.crmfinalproject.contacts.model.NewContactDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -57,7 +58,8 @@ public interface ContactService {
     /**
      * Adds a new contact.
      *
-     * @param contactDTO The information of the contact to add.
+     * @param newContactDTO The information of the contact to add.
+     * @return {@link NewContactDTO} Data Object representation of the new contact
      */
-    void addContact(ContactBaseDTO contactDTO);
+    NewContactDTO addContact(NewContactDTO newContactDTO);
 }

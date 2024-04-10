@@ -1,4 +1,4 @@
-package itschool.crmfinalproject.controller;
+package itschool.crmfinalproject.common.endpoints;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

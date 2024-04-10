@@ -1,4 +1,4 @@
-package itschool.crmfinalproject.analysis.model;
+package itschool.crmfinalproject.data.model;
 
 /**
  * Represents the count of comments for a specific category.

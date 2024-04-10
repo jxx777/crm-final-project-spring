@@ -60,7 +60,7 @@ public class UnstructuredDataSeeder implements CommandLineRunner {
         event.setTime(LocalDateTime.now().minusDays(random.nextInt(365)));
         event.setDescription(faker.lorem().paragraph());
         event.setEventCategory(eventCategory);
-        event.setFieldDetails(generateEventDetails(eventCategory));
+        event.setFieldDetails(generateEventDetails());
         if ((Objects.equals(event.getEventCategory(), "acquisition"))) {
             event.setIncome(getVariedBound() * 100);
         }
@@ -74,10 +74,10 @@ public class UnstructuredDataSeeder implements CommandLineRunner {
     }
 
     // Generates details based on the event category
-    private Map<String, Object> generateEventDetails(String eventCategory) {
+    private Map<String, Object> generateEventDetails() {
         Map<String, Object> fieldDetails = new HashMap<>();
-        fieldDetails.put("Location", faker.address().fullAddress());
-        fieldDetails.put("Note", faker.lorem().sentence());
+        fieldDetails.put("location", faker.address().fullAddress());
+        fieldDetails.put("note", faker.lorem().sentence());
         // Add more logic to customize details based on the event category
         return fieldDetails;
     }

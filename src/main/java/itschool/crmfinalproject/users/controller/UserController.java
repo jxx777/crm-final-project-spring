@@ -59,7 +59,7 @@ public class UserController {
     @Operation(summary = "Update username", description = "Update the username of a user.")
     @ApiResponse(responseCode = "200", description = "Successfully updated username")
     @ApiResponse(responseCode = "404", description = "User not found")
-    @PatchMapping("/username/{id}")
+    @PatchMapping("/username/update/{id}")
     public ResponseEntity<UserDTO> updateUsername(@PathVariable Long id, @RequestBody UserDTO userDTO) {
         return ResponseEntity.ok(userService.updateUsername(id, userDTO.username()));
     }

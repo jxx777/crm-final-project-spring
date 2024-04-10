@@ -1,4 +1,4 @@
-package itschool.crmfinalproject.analysis.model;
+package itschool.crmfinalproject.data.model;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 

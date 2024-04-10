@@ -6,10 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * DTO for user authentication requests.
  */
 public record RequestAuthenticationDTO(
-        // Username used for authentication
-        @Schema(description = "The username for authentication") String username,
-
-        // Password used for authentication
-        @Schema(description = "The password for authentication") String password
+        @Schema(description = "The username for authentication", example = "username") String username,
+        @Schema(description = "The password for authentication", example = "password") String password
 ) {
 }

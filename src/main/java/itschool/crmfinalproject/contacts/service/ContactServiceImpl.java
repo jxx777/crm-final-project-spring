@@ -1,17 +1,18 @@
 package itschool.crmfinalproject.contacts.service;
 
 import itschool.crmfinalproject.contacts.entity.Contact;
-import itschool.crmfinalproject.exceptions.ContactNotFoundException;
 import itschool.crmfinalproject.contacts.mapper.ContactMapper;
 import itschool.crmfinalproject.contacts.model.ContactBaseDTO;
 import itschool.crmfinalproject.contacts.model.ContactDTO;
+import itschool.crmfinalproject.contacts.model.NewContactDTO;
 import itschool.crmfinalproject.contacts.repository.ContactRepository;
+import itschool.crmfinalproject.exceptions.ContactNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -46,9 +47,11 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     @Transactional
-    public void addContact(ContactBaseDTO contactDTO) {
-        Contact newContact = contactMapper.baseToContact(contactDTO);
+    public NewContactDTO addContact(NewContactDTO newContactDTO) {
+        Contact newContact = contactMapper.newToContact(newContactDTO);
         contactRepository.save(newContact);
+
+        return contactMapper.contactToNewContactDTO(newContact);
     }
 
     @Override

@@ -76,7 +76,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     /**
      * Provides an authentication provider bean configured with a user service and password encoder.
      *
-     * @return An instance of DaoAuthenticationProvider.
+     * @return An instance of {@link DaoAuthenticationProvider}.
      */
     @Bean
     AuthenticationProvider authenticationProvider() {
@@ -90,7 +90,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     /**
      * Defines a bean for password encoding using BCrypt.
      *
-     * @return An instance of BCryptPasswordEncoder.
+     * @return An instance of {@link BCryptPasswordEncoder}.
      */
     @Bean
     PasswordEncoder passwordEncoder() {

@@ -35,13 +35,12 @@ public interface CommentService {
     List<CommentDTO> findCommentsByEventId(String eventId);
 
     /**
-     * Post a new comment for an event.
+     * Post a new comment.
      *
-     * @param eventId the ID of the event to comment on
-     * @param commentDetails: new comment fieldDetails
+     * @param commentDetails contains new comment details such as fields, as well as the targeted entity / document
      * @return the newly created comment
      */
-    CommentDTO addComment(String eventId, CommentBaseDTO commentDetails);
+    CommentDTO addComment(CommentBaseDTO commentDetails);
     /**
      * Add a reply to an existing comment.
      *

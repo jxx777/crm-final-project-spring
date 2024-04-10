@@ -1,6 +1,6 @@
-package itschool.crmfinalproject.analysis.service;
+package itschool.crmfinalproject.data.service;
 
-import itschool.crmfinalproject.analysis.model.*;
+import itschool.crmfinalproject.data.model.*;
 import itschool.crmfinalproject.companies.entity.Company;
 import itschool.crmfinalproject.contacts.entity.Contact;
 import itschool.crmfinalproject.sectors.entity.Sector;

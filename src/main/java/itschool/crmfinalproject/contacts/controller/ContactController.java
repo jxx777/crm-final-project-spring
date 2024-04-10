@@ -8,11 +8,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import itschool.crmfinalproject.common.utility.GenerateResponse;
 import itschool.crmfinalproject.contacts.model.ContactBaseDTO;
 import itschool.crmfinalproject.contacts.model.ContactDTO;
+import itschool.crmfinalproject.contacts.model.NewContactDTO;
 import itschool.crmfinalproject.contacts.service.ContactService;
-import itschool.crmfinalproject.common.utility.GenerateResponse;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -55,7 +55,7 @@ public class ContactController {
     @Operation(summary = "Delete a contact by ID")
     @ApiResponse(responseCode = "200", description = "Contact deleted successfully")
     @DeleteMapping("/{contactId}")
-    public ResponseEntity<String> deleteContact(@PathVariable @Parameter(description = "ID of the contact to delete", example = "2") Long contactId) throws JsonProcessingException {
+    public ResponseEntity<?> deleteContact(@PathVariable @Parameter(description = "ID of the contact to delete", example = "2") Long contactId) throws JsonProcessingException {
         contactService.deleteContactById(contactId);
         return GenerateResponse.success("Contact deleted", null);
     }
@@ -63,19 +63,18 @@ public class ContactController {
     @Operation(summary = "Delete all contacts")
     @ApiResponse(responseCode = "200", description = "All contacts deleted successfully")
     @DeleteMapping("/all")
-    public ResponseEntity<String> deleteAllContacts() throws JsonProcessingException {
+    public ResponseEntity<?> deleteAllContacts() throws JsonProcessingException {
         contactService.deleteAllContacts();
         return GenerateResponse.success("All contacts deleted", null);
     }
 
     @Operation(summary = "Add a new contact")
     @ApiResponse(responseCode = "201", description = "Contact created successfully")
-    @PostMapping
-    public ResponseEntity<String> addContact(
-            @Valid @RequestBody(description = "New contact fieldDetails", content = @Content(schema = @Schema(implementation = ContactBaseDTO.class))) ContactBaseDTO newContact
+    @PostMapping("/add")
+    public ResponseEntity<?> addContact(@RequestBody(description = "New contact details", content = @Content(schema = @Schema(implementation = NewContactDTO.class))) NewContactDTO newContact
     ) throws JsonProcessingException {
-        contactService.addContact(newContact);
-        return GenerateResponse.created("Contact Created", newContact);
+        NewContactDTO createdContact = contactService.addContact(newContact);
+        return GenerateResponse.created("Contact Created", createdContact);
     }
 
     @Operation(summary = "Update a contact")

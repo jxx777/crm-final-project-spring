@@ -65,47 +65,111 @@ Această componentă cuprinde
 
 Baze de date: utilizează atât baze de date de tip Relationale (PostgreSQL), cât și baze de date de tip Nonrelationale (MongoDB).
 
-### **Entități**
+## **Entități**
 Entitățile reprezintă obiectele de ce incapsuleaza, manifesteaza Business Logic-ul aplicației.
 Într-un context in care interactionarea cu baza (sau bazele) de date este abstractizata via un ORM (Object-Relational Mapping), cum ar fi Spring Data JPA, o inmpelemare a JPA (Java Persistence API), fiecare entitate
-corespunde unui tabel din baza de date (cel putin in cazul bazelor de cate SQL), iar instanțele entităților concid intrarior (rows) din aceste tabele.
+corespunde unui tabel din baza de date (cel putin in cazul bazelor de date SQL), iar instanțele entităților concid intrarilor (rows) din aceste tabele.
 
+### In cadrul entitatilor mapate in baza de date relationala (e.g PostgreSQL), `BaseEntity` serveste ca super classa / meta-blueprint pentru celalalte entitati
+```java
+package itschool.crmfinalproject.common.entity;
 
+[imports]
 
-```shell
-// In cadrul entiattilor din PostgreSQL, `BaseEntity` serveste ca meta-blueprint pentru celalalte entitati
-.itschool/crmfinalproject/entity
-├── app
-│   ├── Address.java
-│   ├── Company.java
-│   ├── Contact.java
-│   ├── event
-│   │   ├── Comment.java
-│   │   ├── EventCategory.java
-│   │   └── Event.java
-│   └── Sector.java
-├── BaseEntity.java
-└── user
-    ├── Role.java
-    └── User.java
+@Setter
+@Getter
+@EntityListeners(AuditingEntityListener.class)
+@MappedSuperclass
+public class BaseEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @CreatedDate
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
+
+    @CreatedBy
+    private String createdBy;
+
+    @LastModifiedBy
+    private String updatedBy;
+}
 ```
 
-### Abstractizarea interactionarii cu baza de date.
+## Abstractizarea interactionarii cu baza de date.
+### Spring Data JPA ofera un mod facil de a interactiona in mod agnostic cu fiecare baza de date, indiferent de natura acesteia.
+Prin expunearea celor doua interfete, `JpaRepository` respectiv `MongoRepository`, putem efectua rapid o serie de operatiuni CRUD 'by default', fara a fi nevoie de, executarea si compunearea manuala a interogarilor, genstionarea sesiunilor de tranzactii, etc.
 
-```shell
-itschool/crmfinalproject/repository
-├── CommentRepository.java
-├── CompanyRepository.java
-├── ContactRepository.java
-├── event
-│  ├── EventCategoryRepository.java
-│  └── SectorRepository.java
-├── EventRepository.java
-├── RoleRepository.java
-├── StructuredDataRepository.java
-├── UnstructuredDataRepository.java
-└── UserRepository.java
+## `JpaRepository`
+```java
+package itschool.crmfinalproject.contacts.repository;
+
+public interface ContactRepository extends JpaRepository<Contact, Long> {
+  Optional<Contact> findByEmail(String email);
+}
 ```
+## `MongoRepository`
+```java
+package itschool.crmfinalproject.comments.repository;
+
+public interface CommentRepository extends MongoRepository<Comment, String> {
+    List<Comment> findByAuthor(String author);
+}
+```
+
+## `JPQL - Java Persistence Query Language`
+```java
+package itschool.crmfinalproject.statistics.repository;
+
+import itschool.crmfinalproject.contacts.entity.Contact;
+import itschool.crmfinalproject.statistics.model.*;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface StructuredDataRepository extends JpaRepository<Contact, Long> {
+
+    @Query("""
+    SELECT new itschool.crmfinalproject.statistics.model.ContactsPerCompanyDTO(co.name, COUNT(c))
+    FROM Company co JOIN co.contacts c
+    GROUP BY co.name
+    """)
+    List<ContactsPerCompanyDTO> countContactsPerCompany();
+}
+```
+
+## `MongoDb - Aggregation Pipeline`
+
+```java
+package itschool.crmfinalproject.statistics.repository;
+
+import itschool.crmfinalproject.data.model.*;
+import itschool.crmfinalproject.comments.document.Comment;
+import org.springframework.data.mongodb.repository.Aggregation;
+import org.springframework.data.mongodb.repository.MongoRepository;
+
+import java.util.List;
+
+public interface UnstructuredDataRepository extends MongoRepository<Comment, String> {
+
+  @Aggregation(pipeline = {
+          "{$lookup: {from: 'events', localField: 'eventId', foreignField: 'id', as: 'event'}}",
+          "{$unwind: '$event'}",
+          "{$group: {_id: '$event.eventCategory', count: {$sum: 1}}}",
+          "{$project: {category: '$_id', count: 1}}"
+  })
+  List<CategoryCommentsCountDTO> countCommentsPerEventCategory();
+}
+```
+
 
 ### Mentinerea consecventei intre tipurile de date in contextul server / client
 

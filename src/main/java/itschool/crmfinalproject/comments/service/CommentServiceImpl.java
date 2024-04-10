@@ -5,6 +5,8 @@ import itschool.crmfinalproject.comments.mapper.CommentMapper;
 import itschool.crmfinalproject.comments.model.CommentBaseDTO;
 import itschool.crmfinalproject.comments.model.CommentDTO;
 import itschool.crmfinalproject.comments.repository.CommentRepository;
+import itschool.crmfinalproject.events.document.Event;
+import itschool.crmfinalproject.events.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +18,8 @@ import java.util.List;
 public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
+    private final EventRepository eventRepository;
+
     private final CommentMapper commentMapper;
 
     @Override
@@ -50,13 +54,18 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public CommentDTO addComment(String eventId, CommentBaseDTO commentDetails) {
+    public CommentDTO addComment(CommentBaseDTO commentDetails) {
         Comment comment = new Comment();
-        comment.setEventId(eventId);
+        comment.setEventId(commentDetails.entityId());
         comment.setAuthor(commentDetails.author());
         comment.setText(commentDetails.text());
         comment.setTimestamp(LocalDateTime.now());
         comment = commentRepository.save(comment);
+
+        Event event = eventRepository.findById(comment.getEventId()).orElseThrow(() -> new RuntimeException("Event not found"));
+        event.getCommentIds().add(comment.getId());
+        eventRepository.save(event);
+
         return commentMapper.toCommentDTO(comment);
     }
 

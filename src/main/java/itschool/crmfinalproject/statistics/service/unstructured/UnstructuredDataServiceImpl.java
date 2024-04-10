@@ -1,6 +1,6 @@
 package itschool.crmfinalproject.statistics.service.unstructured;
 
-import itschool.crmfinalproject.analysis.model.*;
+import itschool.crmfinalproject.data.model.*;
 import itschool.crmfinalproject.statistics.repository.UnstructuredDataRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

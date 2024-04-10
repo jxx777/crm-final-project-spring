@@ -1,4 +1,4 @@
-package itschool.crmfinalproject.analysis.model;
+package itschool.crmfinalproject.data.model;
 
 /**
  * Analysis data that crosses database boundaries, often combining information from different sources.

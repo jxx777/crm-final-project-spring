@@ -1,4 +1,4 @@
-package itschool.crmfinalproject.analysis.model;
+package itschool.crmfinalproject.data.model;
 
 /**
  * Represents the popularity of an event by counting interactions or participation in a specific month and year.
