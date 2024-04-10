@@ -9,8 +9,10 @@ import itschool.crmfinalproject.events.enums.SubscriptionEnum;
 import itschool.crmfinalproject.contacts.mapper.ContactMapper;
 import itschool.crmfinalproject.events.mapper.EventMapper;
 import itschool.crmfinalproject.contacts.model.ContactBaseDTO;
+import itschool.crmfinalproject.events.model.EventCategoryDTO;
 import itschool.crmfinalproject.events.model.EventDTO;
 import itschool.crmfinalproject.contacts.repository.ContactRepository;
+import itschool.crmfinalproject.events.model.NewEventDTO;
 import itschool.crmfinalproject.events.repository.EventRepository;
 import itschool.crmfinalproject.events.repository.EventCategoryRepository;
 import itschool.crmfinalproject.comments.service.CommentService;
@@ -62,8 +64,8 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public void createEvent(EventDTO eventDTO) {
-        Event newEvent = eventMapper.toEvent(eventDTO);
+    public void createEvent(NewEventDTO newEventDTO) {
+        Event newEvent = eventMapper.newToEvent(newEventDTO);
         eventRepository.insert(newEvent);
     }
 
@@ -132,5 +134,13 @@ public class EventServiceImpl implements EventService {
         return Arrays.stream(SubscriptionEnum.values())
                 .map(Enum::toString)
                 .toList();
+    }
+
+    @Override
+    public List<String> getAllEventCategoriesOptions() {
+        return eventCategoryRepository.findAll()
+                .stream()
+                .map(EventCategory::getType)
+                .collect(Collectors.toList());
     }
 }

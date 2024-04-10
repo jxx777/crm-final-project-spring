@@ -2,6 +2,7 @@ package itschool.crmfinalproject.events.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import itschool.crmfinalproject.events.model.EventDTO;
+import itschool.crmfinalproject.events.model.NewEventDTO;
 
 
 import java.util.List;
@@ -38,9 +39,9 @@ public interface EventService {
     /**
      * Creates a new event.
      *
-     * @param eventDTO the event data transfer object.
+     * @param newEventDTO the event data transfer object.
      */
-    void createEvent(EventDTO eventDTO);
+    void createEvent(NewEventDTO newEventDTO);
 
     /**
      * Updates an existing event.
@@ -75,4 +76,5 @@ public interface EventService {
     Map<String, List<String>> getAllEventTypes();
     List<String> getAllPaymentMethods();
     List<String> getAllSubscriptionTypes();
+    List<String> getAllEventCategoriesOptions();
 }

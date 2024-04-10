@@ -1,6 +1,7 @@
 package itschool.crmfinalproject.events.service;
 
 import itschool.crmfinalproject.events.document.EventCategory;
+
 import java.util.List;
 
 public interface EventCategoryService {
@@ -13,6 +14,5 @@ public interface EventCategoryService {
 
     void deleteEventTypeOptions(String type);
 
-    List<EventCategory> getAllEventCategories();
-
+    List<EventCategory> getEventCategories();
 }

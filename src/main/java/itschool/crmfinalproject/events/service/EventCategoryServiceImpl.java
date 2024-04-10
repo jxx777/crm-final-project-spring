@@ -1,6 +1,7 @@
 package itschool.crmfinalproject.events.service;
 
 import itschool.crmfinalproject.events.document.EventCategory;
+import itschool.crmfinalproject.events.model.EventCategoryDTO;
 import itschool.crmfinalproject.events.repository.EventCategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,8 +21,8 @@ public class EventCategoryServiceImpl implements EventCategoryService {
     }
 
     @Override
-    public List<String> getEventCategoryOptions(String type) {
-        EventCategory category = eventCategoryRepository.findByType(type);
+    public List<String> getEventCategoryOptions(String eventCategory) {
+        EventCategory category = eventCategoryRepository.findByType(eventCategory);
         return category != null ? category.getOptions() : Collections.emptyList();
     }
 
@@ -42,7 +43,7 @@ public class EventCategoryServiceImpl implements EventCategoryService {
     }
 
     @Override
-    public List<EventCategory> getAllEventCategories() {
+    public List<EventCategory> getEventCategories() {
         return eventCategoryRepository.findAll();
     }
 }

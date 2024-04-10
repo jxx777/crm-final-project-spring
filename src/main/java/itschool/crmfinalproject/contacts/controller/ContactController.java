@@ -17,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 
@@ -73,7 +72,7 @@ public class ContactController {
     @PostMapping("/add")
     public ResponseEntity<?> addContact(@RequestBody(description = "New contact details", content = @Content(schema = @Schema(implementation = NewContactDTO.class))) NewContactDTO newContact
     ) throws JsonProcessingException {
-        NewContactDTO createdContact = contactService.addContact(newContact);
+        ContactDTO createdContact = contactService.addContact(newContact);
         return GenerateResponse.created("Contact Created", createdContact);
     }
 

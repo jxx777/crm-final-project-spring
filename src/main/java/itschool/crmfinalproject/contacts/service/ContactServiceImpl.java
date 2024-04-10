@@ -47,11 +47,11 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     @Transactional
-    public NewContactDTO addContact(NewContactDTO newContactDTO) {
+    public ContactDTO addContact(NewContactDTO newContactDTO) {
         Contact newContact = contactMapper.newToContact(newContactDTO);
         contactRepository.save(newContact);
 
-        return contactMapper.contactToNewContactDTO(newContact);
+        return contactMapper.toContactDTO(newContact);
     }
 
     @Override

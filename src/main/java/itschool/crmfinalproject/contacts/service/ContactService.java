@@ -61,5 +61,5 @@ public interface ContactService {
      * @param newContactDTO The information of the contact to add.
      * @return {@link NewContactDTO} Data Object representation of the new contact
      */
-    NewContactDTO addContact(NewContactDTO newContactDTO);
+    ContactDTO addContact(NewContactDTO newContactDTO);
 }

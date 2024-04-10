@@ -36,9 +36,9 @@ public class EventCategoryController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping
-    public ResponseEntity<List<EventCategory>> getAllEventCategories() {
-        List<EventCategory> categories = eventCategoryService.getAllEventCategories();
-        return ResponseEntity.ok(categories);
-    }
+//    @GetMapping
+//    public ResponseEntity<List<EventCategory>> getEventCategories() {
+//        List<EventCategory> categories = eventCategoryService.getEventCategories();
+//        return ResponseEntity.ok(categories);
+//    }
 }

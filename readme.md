@@ -237,7 +237,6 @@ sequenceDiagram
     Service ->> Controller: Return ContactDTO
     Controller ->> Client: HTTP Response (ContactDTO)
     Note over Client, DB: This sequence can also be adapted for (POST), update (PATCH/PUT), or delete (DELETE) operations.
-
 ```
 
 Restful API
@@ -267,10 +266,8 @@ public class ContactController {
 
 ### CLI / Terminal-based client (cURL, httpie, etc)
 ```bash
-set id = 12
-
 curl -X 'GET' \
-  'http://localhost:8080/contacts/{id}}' \
+  'http://localhost:8080/contacts/12' \
   -H 'accept: */*'
 ```
 
@@ -302,112 +299,119 @@ task.resume()
 ```
 
 
+## Service Layer
+___
+Organizate per modul, sau domain, serviciile sunt utlizate in special pentru apelearea repozitoarelor aferente.
 
-Service Layer
------------------------
-Se poate observa
+Clasese de implementarile (suffixate cu `Impl`) fiind responsabile pentru agregarea datelor, procesarea acestora, tratarea erorilor, etc, reprezentand practic business logicul aplicatiei.
 
-```mermaid
-classDiagram
-    class UserService {
-        +getAllUsers()
-        +getAllUsersUsernames()
-        +getAllUsersEmails()
-        +createUser(User user)
-        +findById(Long userId)
-        +findByUsername(String username)
-        +updateUserEmail(Long userId, String newEmail)
-        +updateUsername(Long userId, String newUsername)
-        +updateUserRole(Long userId, RoleEnum newRole)
-        +deleteById(Long id)
-        +getIdByUsername(String username)
-        +saveUserAvatar(Long userId, MultipartFile avatarFile)
+
+Metodele sunt apelate de catre interfete, menite sa abstractizeze detaillie de implementare si sa ofere un overview de ansablu via documentatiei in format JDocs.
+
+### `ContactService.java`
+```java
+package itschool.crmfinalproject.contacts.service;
+import itschool.crmfinalproject.contacts.model.ContactDTO;
+import java.util.List;
+
+public interface ContactService {
+    /**
+     * Retrieves a contact by their ID.
+     *
+     * @param contactId The ID of the contact to retrieve.
+     * @return A {@link ContactDTO} with the contact's data.
+     */
+    ContactDTO getContactById(Long contactId);
+}
+```
+
+### `ContactServiceImplementation.java`
+```java
+package itschool.crmfinalproject.contacts.service;
+import itschool.crmfinalproject.contacts.entity.Contact;
+import itschool.crmfinalproject.contacts.mapper.ContactMapper;
+import itschool.crmfinalproject.contacts.model.ContactDTO;
+import itschool.crmfinalproject.contacts.repository.ContactRepository;
+import itschool.crmfinalproject.exceptions.ContactNotFoundException;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+@Service
+@RequiredArgsConstructor
+public class ContactServiceImpl implements ContactService {
+
+    private final ContactRepository contactRepository;
+    private final ContactMapper contactMapper;
+    
+    @Override
+    public ContactDTO getContactById(Long contactId) {
+      return contactRepository.findById(contactId)
+              .map(contactMapper::toContactDTO)
+              .orElseThrow(() -> new ContactNotFoundException("Contact with the provided ID does not exist"));
     }
+}
+```
+## Authentication
+ Autentificarea utilizatorilor sa face via JWT (JSON Web Tokens), avand ca scop securizarea metodelor expuse de catre aplicatie.
 
-    class CompanyService {
-        +getCompanyById(Long id)
-        +getFullCompanyById(Long id)
-        +getAllCompanies()
-        +getAllCompaniesPaged(Pageable pageable)
-        +addContactToCompany(Long companyId, Long contactId)
-        +deleteCompany(Long companyId)
+> In esenta, un token cu o valabilitate de timp finita este generat atunci cand uitlizatorul interactioneaza cu endpointul de autentificare
+> 
+> Subsecvent, utilizatorul poate utiliza acest token in Headerul oricarui request pentru a putea aciona in functie de privilegiilro de acess pe care le detine
+
+
+### `JwtUtil.java` - `generateAccessToken()`
+```java
+@Component
+public class JwtUtil {
+    private static final Logger logger = LoggerFactory.getLogger(JwtUtil.class);
+    private final String SECRET_KEY = generateSecretKey();
+
+    /**
+     * Generates an access token for a specified username with a set expiration time.
+     *
+     * @param username the username for which the access token will be generated
+     * @return a JWT access token as a String
+     */
+    public String generateAccessToken(String username) {
+        long EXPIRATION_TIME_ACCESS_TOKEN = TimeUnit.MINUTES.toMillis(30);
+        return JWT.create()
+                .withSubject(username)
+                .withIssuedAt(new Date())
+                .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME_ACCESS_TOKEN))
+                .sign(Algorithm.HMAC256(SECRET_KEY));
     }
+}
+```
 
-    class ContactService {
-        +getContactById(Long contactId)
-        +getAllContactsPaged(Pageable pageable)
-        +getAllContacts()
-        +updateContact(Long contactId, ContactBaseDTO contactDTO)
-        +deleteContactById(Long contactId)
-        +deleteAllContacts()
-        +addContact(ContactBaseDTO contactDTO)
+### `AuthenticationController.java` - `login()`
+```java
+package itschool.crmfinalproject.authentification.controller;
+
+@RestController
+@RequestMapping("/auth")
+@RequiredArgsConstructor
+@Tag(name = "Authentication Service", description = "Handles user authentication processes, token generation, and session management.")
+public class AuthenticationController {
+
+  private final AuthenticationService authenticationService;
+  private final JwtUtil jwtUtil;
+  
+  @PostMapping("/login")
+  public ResponseEntity<?> login(@RequestBody RequestAuthenticationDTO requestAuthenticationDTO) {
+    try {
+      ResponseEntity<?> authResponse = authenticationService.accessAccount(requestAuthenticationDTO);
+      if (!authResponse.getStatusCode().is2xxSuccessful()) {
+        return authResponse;
+      }
+      String accessToken = jwtUtil.generateAccessToken(requestAuthenticationDTO.username());
+      String refreshToken = jwtUtil.generateRefreshToken(requestAuthenticationDTO.username());
+      Map<String, String> tokens = new HashMap<>();
+      tokens.put("accessToken", accessToken);
+      tokens.put("refreshToken", refreshToken); // This is implemented, although with a few caveats...
+      return ResponseEntity.ok(tokens);
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Error processing request");
     }
-
-    class CommentService {
-        +findAllComments()
-        +findCommentsByAuthor(String author)
-        +findCommentsByEventId(String eventId)
-        +addComment(String eventId, CommentBaseDTO commentDetails)
-        +replyToComment(String parentId, CommentBaseDTO replyDetails)
-        +addLike(String commentId, String userId)
-        +removeLike(String commentId, String userId)
-        +deleteComment(String commentId)
-        +findCommentById(String commentId)
-    }
-
-    class EventService {
-        +findAllEvents()
-        +findAllEventsForContact(Long contactId)
-        +findEventById(String eventId)
-        +createEvent(EventDTO eventDTO)
-        +updateEvent(String eventId, EventDTO eventDTO)
-        +deleteEvent(String eventId)
-        +addContactToEvent(String eventId, Long contactId)
-        +getAllEventTypes()
-        +getAllPaymentMethods()
-        +getAllSubscriptionTypes()
-    }
-
-    class DataAggregationService {
-        +getAggregatedData()
-        +getIncomeEventParticipationData()
-        +getEventParticipationDetails()
-        +getSectorRevenueByEventIncome()
-        +getCrossDatabaseCommentAnalysis()
-    }
-
-    class StructuredDataService {
-        +countContactsPerCompany()
-        +countCompaniesPerSector()
-        +findTopTagsUsed()
-        +avgCompanyEvaluationPerSector()
-        +totalIncomePerSector()
-        +countCompaniesAboveEvaluationThreshold(Double evaluationThreshold)
-        +getTopSectorsByCompanyCount()
-    }
-
-    class UnstructuredDataService {
-        +countCommentsPerEventCategory()
-        +findTopActiveUsers()
-        +findEventPopularityOverTime()
-        +analyzeCommentEngagement()
-        +analyzeCommentLengthDistribution()
-    }
-
-    class ExportService {
-        +exportData(String entityType, String format)
-    }
-
-    UserService "1" -- "0..*" CompanyService: uses
-    UserService "1" -- "0..*" ContactService: uses
-    UserService "1" -- "0..*" CommentService: uses
-    CompanyService "1" -- "0..*" ContactService: uses
-    ContactService "1" -- "0..*" CommentService: uses
-    EventService "1" -- "0..*" CommentService: uses
-    DataAggregationService "1" -- "0..*" StructuredDataService: uses
-    DataAggregationService "1" -- "0..*" UnstructuredDataService: uses
-    ExportService "1" -- "0..*" UserService: uses
-    ExportService "1" -- "0..*" CompanyService: uses
-    ExportService "1" -- "0..*" ContactService: uses
-
+  }
+}
 ```

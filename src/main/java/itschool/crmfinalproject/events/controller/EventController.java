@@ -5,7 +5,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import itschool.crmfinalproject.events.model.EventCategoryDTO;
 import itschool.crmfinalproject.events.model.EventDTO;
+import itschool.crmfinalproject.events.model.NewEventDTO;
 import itschool.crmfinalproject.events.service.EventCategoryService;
 import itschool.crmfinalproject.events.service.EventService;
 import itschool.crmfinalproject.common.utility.GenerateResponse;
@@ -53,17 +55,25 @@ public class EventController {
 
     @Operation(summary = "Get event options", description = "Retrieve a list of options based on the event category.")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved event options")
-    @GetMapping("/options/{type}")
-    public ResponseEntity<List<String>> getEventOptions(@PathVariable String type) {
-        List<String> eventCategoryOptions = eventCategoryService.getEventCategoryOptions(type);
+    @GetMapping("/categories/{eventCategory}")
+    public ResponseEntity<List<String>> getEventCategoryOptions(@PathVariable String eventCategory) {
+        List<String> eventCategoryOptions = eventCategoryService.getEventCategoryOptions(eventCategory);
         return ResponseEntity.ok(eventCategoryOptions);
+    }
+
+    @Operation(summary = "Get event categories", description = "Retrieve a list of all event categories.")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved event categories")
+    @GetMapping("/categories")
+    public ResponseEntity<?> getAllEventCategoriesOptions() {
+        List<String> eventTypes = eventService.getAllEventCategoriesOptions();
+        return ResponseEntity.ok(eventTypes);
     }
 
     @Operation(summary = "Create an event", description = "Create a new event.")
     @ApiResponse(responseCode = "200", description = "Successfully created an event")
     @PostMapping("/create")
-    public ResponseEntity<?> createEvent(@RequestBody @Parameter(description = "Event data to create") EventDTO eventDto) throws JsonProcessingException {
-        eventService.createEvent(eventDto);
+    public ResponseEntity<?> createEvent(@RequestBody @Parameter(description = "Event data to create") NewEventDTO newEventDTO) throws JsonProcessingException {
+        eventService.createEvent(newEventDTO);
         return GenerateResponse.created("Event created", null);
     }
 
